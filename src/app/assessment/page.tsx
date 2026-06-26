@@ -225,8 +225,8 @@ export default function AssessmentPage() {
                     aria-checked={isSelected}
                     className={`group flex items-start gap-4 rounded-xl border p-4 transition-all duration-200 cursor-pointer focus:outline-none focus:ring-1 focus:ring-blue-500/50 ${
                       isSelected
-                        ? "border-blue-500 bg-blue-500/[0.03] shadow-[0_0_20px_rgba(59,130,246,0.1)]"
-                        : "border-white/[0.04] bg-white/[0.005] hover:border-white/[0.08] hover:bg-white/[0.02]"
+                        ? "border-blue-500/60 bg-blue-500/[0.03] shadow-[0_0_15px_rgba(59,130,246,0.12)]"
+                        : "border-white/[0.05] bg-white/[0.02] backdrop-blur-md hover:border-white/[0.1] hover:bg-white/[0.04] hover:shadow-[0_4px_16px_rgba(0,0,0,0.15)]"
                     }`}
                   >
                     {/* SVG Radio indicator */}

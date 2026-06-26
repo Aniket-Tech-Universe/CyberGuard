@@ -366,11 +366,11 @@ export default function DashboardPage() {
 
                         let statusColor = "border-white/[0.04] bg-[#111827]/10 text-gray-500";
                         if (node.status === "active-exploit") {
-                          statusColor = "border-red-500 bg-red-500/5 text-red-400 shadow-[0_0_20px_rgba(239,68,68,0.1)]";
+                          statusColor = "border-red-500 bg-red-500/5 text-red-400 sonar-pulse-red";
                         } else if (node.status === "vulnerable") {
                           statusColor = "border-amber-500/30 bg-amber-500/5 text-amber-500";
                         } else if (node.status === "secure") {
-                          statusColor = "border-green-500 bg-green-500/5 text-green-400";
+                          statusColor = "border-green-500 bg-green-500/5 text-green-400 sonar-pulse-green";
                         }
 
                         return (
