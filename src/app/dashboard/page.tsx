@@ -9,17 +9,44 @@ import { getAttackPaths } from "@/lib/attack-engine";
 import { getRecommendations } from "@/lib/recommendation-engine";
 import { generatePdfReport } from "@/lib/pdf-report";
 import {
-  Shield,
   ShieldCheck,
-  ShieldAlert,
-  ArrowRight,
   RefreshCw,
   FileDown,
   CheckCircle,
   XCircle,
   Activity,
-  Zap
+  Zap,
+  ChevronRight
 } from "lucide-react";
+
+// Animated counter hook helper
+function AnimatedCounter({ value }: { value: number }) {
+  const [displayVal, setDisplayVal] = useState(0);
+
+  useEffect(() => {
+    const start = displayVal;
+    const end = value;
+    if (start === end) return;
+    const duration = 600; // ms
+    const range = end - start;
+    let startTime: number | null = null;
+
+    const animate = (timestamp: number) => {
+      if (!startTime) startTime = timestamp;
+      const progress = Math.min((timestamp - startTime) / duration, 1);
+      // Easing out quadratic
+      const ease = progress * (2 - progress);
+      setDisplayVal(Math.round(start + range * ease));
+      if (progress < 1) {
+        requestAnimationFrame(animate);
+      }
+    };
+    requestAnimationFrame(animate);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [value]);
+
+  return <span>{displayVal}</span>;
+}
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -27,8 +54,9 @@ export default function DashboardPage() {
     useAssessmentStore();
 
   const [activePathTab, setActivePathTab] = useState("credential-theft");
+  const [expandedRecId, setExpandedRecId] = useState<string | null>(null);
 
-  // Redirect to assessment if not submitted
+  // Redirect if not submitted
   useEffect(() => {
     if (!isSubmitted) {
       router.push("/assessment");
@@ -37,32 +65,20 @@ export default function DashboardPage() {
 
   if (!isSubmitted) {
     return (
-      <div className="flex min-h-[50vh] flex-col items-center justify-center space-y-4 text-center">
-        <ShieldAlert size={48} className="text-warning animate-bounce" />
-        <h2 className="text-xl font-bold text-white">Assessment Required</h2>
-        <p className="text-sm text-gray-400 max-w-sm">
-          Please complete the 10-question cyber hygiene assessment to generate your personalized risk dashboard.
-        </p>
-        <button
-          onClick={() => router.push("/assessment")}
-          className="inline-flex items-center gap-1.5 rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white shadow-md hover:bg-blue-500"
-        >
-          Start Assessment
-          <ArrowRight size={16} />
-        </button>
+      <div className="flex min-h-[60vh] flex-col items-center justify-center space-y-4 text-center">
+        <LoaderSpinner />
       </div>
     );
   }
 
-  // Calculate results
+  // Calculate parameters
   const risk = evaluateRisk(answers, whatIfToggles);
+  const healthScore = Math.max(0, 100 - risk.score);
   const cia = evaluateCia(answers, whatIfToggles);
   const attackPaths = getAttackPaths(answers, whatIfToggles);
   const recommendations = getRecommendations(answers);
 
-  // PDF report downloader
   const handleDownloadPdf = () => {
-    // Generate active recommendations list
     generatePdfReport(risk, cia, attackPaths, recommendations);
   };
 
@@ -70,348 +86,463 @@ export default function DashboardPage() {
     resetWhatIfToggles();
   };
 
+  // Needle degrees: 0 score = -90deg, 100 score = 90deg
+  const needleRotation = (risk.score / 100) * 180 - 90;
+
   return (
-    <div className="space-y-8 pb-16">
-      {/* Dashboard Title Panel */}
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b border-gray-800 pb-5">
+    <div className="space-y-8 pb-16 bg-grid-pattern relative">
+      {/* Dynamic Background Glows */}
+      <div className="absolute top-20 right-10 h-[300px] w-[300px] rounded-full bg-blue-500/5 blur-[100px] pointer-events-none" />
+
+      {/* Title Header Panel */}
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6 border-b border-white/[0.04] pb-5">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-white sm:text-3xl">Risk &amp; Control Command Center</h1>
+          <h1 className="text-3xl font-extrabold tracking-tight text-white">Risk Command Center</h1>
           <p className="mt-1 text-sm text-gray-400">
-            Simulate controls, block attack chains, and export compliance reports.
+            Real-time threat modeling, control simulations, and compliance reports.
           </p>
         </div>
         <div className="flex flex-wrap gap-3">
           <button
             onClick={handleResetSandbox}
-            className="flex items-center gap-1.5 rounded-xl border border-gray-800 bg-gray-900/30 px-4 py-2.5 text-sm font-semibold text-gray-400 hover:text-white transition hover:bg-gray-800"
+            className="flex items-center gap-2 rounded-xl border border-white/[0.05] bg-white/[0.01] hover:bg-white/[0.03] px-4 py-2.5 text-xs font-semibold text-gray-400 hover:text-white transition"
           >
-            <RefreshCw size={15} />
+            <RefreshCw size={13} />
             Reset Sandbox
           </button>
           <button
             onClick={handleDownloadPdf}
-            className="flex items-center gap-1.5 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white shadow-md hover:bg-blue-500 hover:shadow-blue-500/20 hover:scale-[1.01] transition-all"
+            className="flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-xs font-semibold text-white shadow-lg shadow-blue-500/10 hover:bg-blue-500 hover:scale-[1.01] transition-all"
           >
-            <FileDown size={15} />
-            Download PDF Report
+            <FileDown size={13} />
+            Export Compliance Report
           </button>
         </div>
       </div>
 
-      {/* Top Section: Risk Score & CIA Rings */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      {/* Main Grid: Mission Control Layout */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         
-        {/* Risk Gauge Card */}
-        <div className="rounded-2xl border border-gray-800 bg-surface p-6 shadow-lg flex flex-col items-center justify-between text-center space-y-4">
-          <div className="w-full flex items-center justify-between border-b border-gray-800 pb-3">
-            <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">Hygiene Risk Level</span>
-            <span className={`text-xs font-bold uppercase ${risk.color}`}>{risk.level}</span>
-          </div>
-
-          {/* SVG Risk Arc */}
-          <div className="relative flex h-36 w-36 items-center justify-center">
-            <svg className="h-full w-full -rotate-90" viewBox="0 0 100 100">
-              <circle
-                cx="50"
-                cy="50"
-                r="40"
-                className="stroke-gray-800"
-                strokeWidth="8"
-                fill="transparent"
-              />
-              <circle
-                cx="50"
-                cy="50"
-                r="40"
-                className={`transition-all duration-500 ${
-                  risk.score > 80 ? "stroke-danger" : risk.score > 60 ? "stroke-danger" : risk.score > 30 ? "stroke-warning" : "stroke-success"
-                }`}
-                strokeWidth="8"
-                fill="transparent"
-                strokeDasharray="251.2"
-                strokeDashoffset={251.2 - (251.2 * risk.score) / 100}
-                strokeLinecap="round"
-              />
-            </svg>
-            <div className="absolute flex flex-col items-center justify-center">
-              <span className="text-3xl font-extrabold text-white">{risk.score}</span>
-              <span className="text-[10px] uppercase font-semibold text-gray-500">Risk Index</span>
+        {/* Left Columns sidebar: Metrics Controls */}
+        <div className="lg:col-span-4 space-y-6">
+          
+          {/* Risk Level gauge */}
+          <div className="rounded-2xl border border-white/[0.04] bg-[#111827]/40 backdrop-blur-md p-6 shadow-xl space-y-6 flex flex-col items-center text-center animate-fade-in-up">
+            <div className="w-full flex items-center justify-between border-b border-white/[0.03] pb-3">
+              <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Risk Posture</span>
+              <span className={`text-[10px] font-bold uppercase tracking-wide px-2 py-0.5 rounded ${
+                risk.score > 80 ? "bg-red-500/10 text-red-400 border border-red-500/20" : risk.score > 60 ? "bg-red-500/10 text-red-400" : risk.score > 30 ? "bg-amber-500/10 text-amber-400 border border-amber-500/20" : "bg-green-500/10 text-green-400 border border-green-500/20"
+              }`}>
+                {risk.level}
+              </span>
             </div>
-          </div>
 
-          <p className="text-xs text-gray-500 leading-relaxed px-4">
-            Lower scores imply higher resilience. Your baseline risk level is <span className="font-semibold text-white">{risk.level}</span>.
-          </p>
-        </div>
-
-        {/* CIA Triad Circles Card */}
-        <div className="rounded-2xl border border-gray-800 bg-surface p-6 shadow-lg flex flex-col items-center justify-between text-center space-y-4">
-          <div className="w-full flex items-center justify-between border-b border-gray-800 pb-3">
-            <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">CIA Triad Security Strength</span>
-            <span className="text-xs font-bold text-blue-400 uppercase">Capabilities</span>
-          </div>
-
-          {/* Concentric Circles Visualizer */}
-          <div className="relative flex h-36 w-36 items-center justify-center">
-            <svg className="h-full w-full -rotate-90" viewBox="0 0 100 100">
-              {/* Outer: Confidentiality */}
-              <circle cx="50" cy="50" r="40" className="stroke-gray-800/40" strokeWidth="4" fill="transparent" />
-              <circle cx="50" cy="50" r="40" className="stroke-primary transition-all duration-500" strokeWidth="4" fill="transparent" strokeDasharray="251.2" strokeDashoffset={251.2 - (251.2 * cia.confidentiality) / 100} strokeLinecap="round" />
-
-              {/* Middle: Integrity */}
-              <circle cx="50" cy="50" r="30" className="stroke-gray-800/40" strokeWidth="4" fill="transparent" />
-              <circle cx="50" cy="50" r="30" className="stroke-accent transition-all duration-500" strokeWidth="4" fill="transparent" strokeDasharray="188.4" strokeDashoffset={188.4 - (188.4 * cia.integrity) / 100} strokeLinecap="round" />
-
-              {/* Inner: Availability */}
-              <circle cx="50" cy="50" r="20" className="stroke-gray-800/40" strokeWidth="4" fill="transparent" />
-              <circle cx="50" cy="50" r="20" className="stroke-success transition-all duration-500" strokeWidth="4" fill="transparent" strokeDasharray="125.6" strokeDashoffset={125.6 - (125.6 * cia.availability) / 100} strokeLinecap="round" />
-            </svg>
-            <div className="absolute text-[9px] font-bold text-gray-500 flex flex-col items-center">
-              <span className="text-blue-400">C: {cia.confidentiality}%</span>
-              <span className="text-purple-400">I: {cia.integrity}%</span>
-              <span className="text-green-400">A: {cia.availability}%</span>
+            {/* SVG semi-circle pointer dial */}
+            <div className="relative flex h-32 w-48 items-end justify-center overflow-hidden">
+              <svg className="absolute top-0 left-0 h-full w-full" viewBox="0 0 100 60">
+                {/* Dial background arc */}
+                <path
+                  d="M 10 50 A 40 40 0 0 1 90 50"
+                  fill="none"
+                  className="stroke-white/[0.02]"
+                  strokeWidth="8"
+                  strokeLinecap="round"
+                />
+                {/* Colored progress arc */}
+                <path
+                  d="M 10 50 A 40 40 0 0 1 90 50"
+                  fill="none"
+                  className={`transition-all duration-700 ease-out ${
+                    risk.score > 60 ? "stroke-red-500" : risk.score > 30 ? "stroke-amber-500" : "stroke-green-500"
+                  }`}
+                  strokeWidth="8"
+                  strokeDasharray="125.6"
+                  strokeDashoffset={125.6 - (125.6 * risk.score) / 100}
+                  strokeLinecap="round"
+                />
+                
+                {/* Needle Center Pivot */}
+                <circle cx="50" cy="50" r="4" className="fill-white" />
+                <circle cx="50" cy="50" r="2" className="fill-gray-900" />
+                
+                {/* Needle Pointer */}
+                <line
+                  x1="50" y1="50" x2="50" y2="15"
+                  className="stroke-white stroke-2"
+                  style={{
+                    transform: `rotate(${needleRotation}deg)`,
+                    transformOrigin: "50px 50px",
+                    transition: "transform 1s cubic-bezier(0.16, 1, 0.3, 1)"
+                  }}
+                />
+              </svg>
+              
+              <div className="absolute bottom-0 flex flex-col items-center">
+                <span className="text-3xl font-black text-white tracking-tight">
+                  <AnimatedCounter value={risk.score} />
+                </span>
+                <span className="text-[8px] uppercase tracking-wider text-gray-500">Risk Score Index</span>
+              </div>
             </div>
+
+            <p className="text-[11px] text-gray-500 leading-relaxed max-w-xs font-sans">
+              Calculated based on answers and active overrides. Target is a lower score.
+            </p>
           </div>
 
-          <div className="flex justify-center gap-4 text-[10px] font-semibold">
-            <span className="flex items-center gap-1"><span className="h-2 w-2 rounded-full bg-blue-500" /> Confidentiality</span>
-            <span className="flex items-center gap-1"><span className="h-2 w-2 rounded-full bg-purple-500" /> Integrity</span>
-            <span className="flex items-center gap-1"><span className="h-2 w-2 rounded-full bg-green-500" /> Availability</span>
-          </div>
-        </div>
+          {/* Security Health / CIA rings */}
+          <div className="rounded-2xl border border-white/[0.04] bg-[#111827]/40 backdrop-blur-md p-6 shadow-xl space-y-6 flex flex-col items-center text-center animate-fade-in-up delay-100">
+            <div className="w-full flex items-center justify-between border-b border-white/[0.03] pb-3">
+              <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Security Health &amp; CIA Strength</span>
+              <span className="text-[10px] font-bold text-indigo-400 uppercase tracking-wide">Metrics</span>
+            </div>
 
-        {/* What-If Toggle Sandbox Card */}
-        <div className="rounded-2xl border border-gray-800 bg-surface p-6 shadow-lg space-y-4">
-          <div className="flex items-center justify-between border-b border-gray-800 pb-3">
-            <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">What-If Control Sandbox</span>
-            <span className="flex items-center gap-1 text-xs font-bold text-green-400">
-              <Zap size={12} fill="currentColor" />
-              Active Toggles
-            </span>
-          </div>
+            {/* Health index card */}
+            <div className="flex justify-between items-center w-full px-4 py-3 rounded-xl border border-white/[0.03] bg-white/[0.005]">
+              <span className="text-xs font-semibold text-gray-400">Security Health</span>
+              <span className="text-xl font-extrabold text-white flex items-center gap-1.5">
+                <ShieldCheck size={18} className="text-indigo-400" />
+                <AnimatedCounter value={healthScore} />%
+              </span>
+            </div>
 
-          <div className="space-y-3">
-            <SandboxToggle
-              label="Deploy Multi-Factor Authentication"
-              checked={whatIfToggles.enableMfa}
-              onChange={(v) => setWhatIfToggle("enableMfa", v)}
-            />
-            <SandboxToggle
-              label="Enforce Unique Passwords"
-              checked={whatIfToggles.uniquePasswords}
-              onChange={(v) => setWhatIfToggle("uniquePasswords", v)}
-            />
-            <SandboxToggle
-              label="Enable Auto Updates (OS/Browser)"
-              checked={whatIfToggles.updateOs}
-              onChange={(v) => setWhatIfToggle("updateOs", v)}
-            />
-            <SandboxToggle
-              label="Install Active Antivirus"
-              checked={whatIfToggles.installAntivirus}
-              onChange={(v) => setWhatIfToggle("installAntivirus", v)}
-            />
-            <SandboxToggle
-              label="Connect with Encrypted VPN"
-              checked={whatIfToggles.secureWifi}
-              onChange={(v) => setWhatIfToggle("secureWifi", v)}
-            />
-          </div>
-        </div>
-      </div>
+            {/* Concentric CIA rings */}
+            <div className="relative flex h-36 w-36 items-center justify-center">
+              <svg className="h-full w-full -rotate-90" viewBox="0 0 100 100">
+                {/* Confidentiality Outer */}
+                <circle cx="50" cy="50" r="40" className="stroke-white/[0.02]" strokeWidth="4" fill="transparent" />
+                <circle cx="50" cy="50" r="40" className="stroke-blue-500 transition-all duration-700 ease-out" strokeWidth="4" fill="transparent" strokeDasharray="251.2" strokeDashoffset={251.2 - (251.2 * cia.confidentiality) / 100} strokeLinecap="round" />
 
-      {/* Middle Section: Attack Simulator */}
-      <div className="rounded-2xl border border-gray-800 bg-surface p-6 shadow-lg space-y-6">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between border-b border-gray-800 pb-3 gap-3">
-          <div className="flex items-center gap-2">
-            <Activity className="text-blue-500 animate-pulse" size={18} />
-            <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">Interactive Attack Path Simulator</span>
-          </div>
+                {/* Integrity Middle */}
+                <circle cx="50" cy="50" r="30" className="stroke-white/[0.02]" strokeWidth="4" fill="transparent" />
+                <circle cx="50" cy="50" r="30" className="stroke-purple-500 transition-all duration-700 ease-out" strokeWidth="4" fill="transparent" strokeDasharray="188.4" strokeDashoffset={188.4 - (188.4 * cia.integrity) / 100} strokeLinecap="round" />
 
-          <div className="flex rounded-lg bg-gray-900/50 p-1 border border-gray-800">
-            {attackPaths.map((path) => (
-              <button
-                key={path.id}
-                onClick={() => setActivePathTab(path.id)}
-                className={`rounded-md px-3 py-1.5 text-xs font-semibold transition ${
-                  activePathTab === path.id
-                    ? "bg-blue-600 text-white shadow-sm"
-                    : "text-gray-400 hover:text-white"
-                }`}
-              >
-                {path.id === "credential-theft" ? "MFA/Password" : path.id === "ransomware" ? "Ransomware" : "Wi-Fi MitM"}
-              </button>
-            ))}
-          </div>
-        </div>
+                {/* Availability Inner */}
+                <circle cx="50" cy="50" r="20" className="stroke-white/[0.02]" strokeWidth="4" fill="transparent" />
+                <circle cx="50" cy="50" r="20" className="stroke-green-500 transition-all duration-700 ease-out" strokeWidth="4" fill="transparent" strokeDasharray="125.6" strokeDashoffset={125.6 - (125.6 * cia.availability) / 100} strokeLinecap="round" />
+              </svg>
+              <div className="absolute text-[8px] font-bold text-gray-500 flex flex-col items-center space-y-0.5">
+                <span className="text-blue-400">C: <AnimatedCounter value={cia.confidentiality} />%</span>
+                <span className="text-purple-400">I: <AnimatedCounter value={cia.integrity} />%</span>
+                <span className="text-green-400 font-medium">A: <AnimatedCounter value={cia.availability} />%</span>
+              </div>
+            </div>
 
-        {/* Selected Attack Path visualization */}
-        {attackPaths
-          .filter((p) => p.id === activePathTab)
-          .map((path) => {
-            return (
-              <div key={path.id} className="space-y-6">
-                <div className="rounded-xl bg-gray-900/20 border border-gray-800 p-4 space-y-2">
-                  <div className="flex items-center justify-between flex-wrap gap-2">
-                    <h3 className="text-sm font-bold text-white">{path.name}</h3>
-                    <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold ${
-                      path.isCompromised
-                        ? "bg-red-500/10 text-red-400 border border-red-500/20"
-                        : "bg-green-500/10 text-green-400 border border-green-500/20"
-                    }`}>
-                      {path.isCompromised ? <XCircle size={12} /> : <CheckCircle size={12} />}
-                      {path.isCompromised ? "System Compromised" : "Breach Blocked"}
-                    </span>
-                  </div>
-                  <p className="text-xs text-gray-400">{path.description}</p>
+            {/* Custom Interactive Tooltips explaining CIA */}
+            <div className="grid grid-cols-3 gap-2 w-full pt-2">
+              <div className="tooltip-trigger flex flex-col items-center p-2 rounded-lg border border-white/[0.03] bg-white/[0.005] cursor-help">
+                <span className="h-1.5 w-1.5 rounded-full bg-blue-500 mb-1" />
+                <span className="text-[9px] text-gray-400 font-semibold">Confid.</span>
+                {/* Tooltip Box */}
+                <div className="tooltip-box bottom-full left-1/2 -translate-x-1/2 mb-2 w-40 rounded-lg border border-white/[0.06] bg-[#161B26] p-2.5 text-left text-[9px] text-gray-400 shadow-xl leading-normal">
+                  <span className="font-bold text-white block mb-0.5">Confidentiality</span>
+                  Restricts unauthorized data access. Secured by MFA and strong passwords.
                 </div>
+              </div>
 
-                {/* Node visual line map */}
-                <div className="flex flex-col lg:flex-row items-center justify-between gap-6 px-4 py-8 relative">
-                  {path.nodes.map((node, idx) => {
-                    const isLast = idx === path.nodes.length - 1;
-                    const nextLink = path.links.find(l => l.source === node.id);
-                    const isLinkActive = nextLink ? nextLink.isActive : false;
+              <div className="tooltip-trigger flex flex-col items-center p-2 rounded-lg border border-white/[0.03] bg-white/[0.005] cursor-help">
+                <span className="h-1.5 w-1.5 rounded-full bg-purple-500 mb-1" />
+                <span className="text-[9px] text-gray-400 font-semibold">Integrity</span>
+                {/* Tooltip Box */}
+                <div className="tooltip-box bottom-full left-1/2 -translate-x-1/2 mb-2 w-40 rounded-lg border border-white/[0.06] bg-[#161B26] p-2.5 text-left text-[9px] text-gray-400 shadow-xl leading-normal">
+                  <span className="font-bold text-white block mb-0.5">Integrity</span>
+                  Protects data from unauthorized modification. Enforced by OS patches and Antivirus.
+                </div>
+              </div>
 
-                    let statusColor = "border-gray-800 bg-gray-900/40 text-gray-500";
-                    let glowClass = "";
+              <div className="tooltip-trigger flex flex-col items-center p-2 rounded-lg border border-white/[0.03] bg-white/[0.005] cursor-help">
+                <span className="h-1.5 w-1.5 rounded-full bg-green-500 mb-1" />
+                <span className="text-[9px] text-gray-400 font-semibold">Availab.</span>
+                {/* Tooltip Box */}
+                <div className="tooltip-box bottom-full left-1/2 -translate-x-1/2 mb-2 w-40 rounded-lg border border-white/[0.06] bg-[#161B26] p-2.5 text-left text-[9px] text-gray-400 shadow-xl leading-normal">
+                  <span className="font-bold text-white block mb-0.5">Availability</span>
+                  Ensures systems stay responsive. Secured by regular offline backups.
+                </div>
+              </div>
+            </div>
+          </div>
 
-                    if (node.status === "active-exploit") {
-                      statusColor = "border-danger bg-danger/5 text-danger";
-                      glowClass = "shadow-[0_0_15px_rgba(239,68,68,0.2)]";
-                    } else if (node.status === "vulnerable") {
-                      statusColor = "border-warning bg-warning/5 text-warning";
-                    } else if (node.status === "secure") {
-                      statusColor = "border-success bg-success/5 text-success";
-                    }
+          {/* Sandbox console */}
+          <div className="rounded-2xl border border-white/[0.04] bg-[#111827]/40 backdrop-blur-md p-6 shadow-xl space-y-5 animate-fade-in-up delay-200">
+            <div className="flex items-center justify-between border-b border-white/[0.03] pb-3">
+              <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Sandbox Overrides</span>
+              <span className="flex items-center gap-1 text-[9px] font-bold text-green-400 px-2 py-0.5 rounded bg-green-500/10 border border-green-500/20">
+                <Zap size={10} fill="currentColor" />
+                ACTIVE
+              </span>
+            </div>
 
-                    return (
-                      <div key={node.id} className="flex flex-col lg:flex-row items-center w-full lg:w-auto relative">
-                        {/* Node Card */}
-                        <div className={`relative flex flex-col items-center justify-center p-4 rounded-xl border text-center max-w-[170px] w-full min-h-[90px] transition-all duration-300 ${statusColor} ${glowClass}`}>
-                          <span className="text-[10px] font-bold uppercase tracking-wider opacity-60 mb-1">Step {idx + 1}</span>
-                          <span className="text-xs font-bold">{node.label}</span>
-                          <p className="mt-1.5 text-[10px] opacity-80 leading-normal hidden sm:block">{node.description}</p>
-                        </div>
+            <div className="space-y-3">
+              <SandboxSliderToggle
+                label="Multi-Factor Auth (MFA)"
+                checked={whatIfToggles.enableMfa}
+                onChange={(v) => setWhatIfToggle("enableMfa", v)}
+                tooltip="Secures identity and prevents password abuse."
+              />
+              <SandboxSliderToggle
+                label="Unique Passwords"
+                checked={whatIfToggles.uniquePasswords}
+                onChange={(v) => setWhatIfToggle("uniquePasswords", v)}
+                tooltip="Prevents credential reuse attacks across sites."
+              />
+              <SandboxSliderToggle
+                label="Automatic OS Updates"
+                checked={whatIfToggles.updateOs}
+                onChange={(v) => setWhatIfToggle("updateOs", v)}
+                tooltip="Patches critical zero-day software holes."
+              />
+              <SandboxSliderToggle
+                label="Endpoint Antivirus"
+                checked={whatIfToggles.installAntivirus}
+                onChange={(v) => setWhatIfToggle("installAntivirus", v)}
+                tooltip="Quarantines malicious file downloads."
+              />
+              <SandboxSliderToggle
+                label="Encrypted VPN Connections"
+                checked={whatIfToggles.secureWifi}
+                onChange={(v) => setWhatIfToggle("secureWifi", v)}
+                tooltip="Shields packets from public Wi-Fi packet sniffing."
+              />
+            </div>
+          </div>
+        </div>
 
-                        {/* Connection arrow/shield block to next node */}
-                        {!isLast && (
-                          <div className="flex flex-col items-center justify-center min-h-[40px] lg:min-h-0 w-8 lg:w-16 h-8 lg:h-auto">
-                            {isLinkActive ? (
-                              <div className="flex items-center justify-center flex-col text-red-500 font-bold text-lg rotate-90 lg:rotate-0 animate-pulse">
-                                <span>&rarr;</span>
-                                <span className="text-[8px] uppercase tracking-wider text-red-500/80 mt-0.5">Active</span>
+        {/* Right side area: Simulator & Actions */}
+        <div className="lg:col-span-8 space-y-6">
+          
+          {/* Attack simulator */}
+          <div className="rounded-2xl border border-white/[0.04] bg-[#111827]/40 backdrop-blur-md p-6 shadow-xl space-y-6 animate-fade-in-up">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between border-b border-white/[0.03] pb-3 gap-3">
+              <div className="flex items-center gap-2">
+                <Activity className="text-blue-500" size={16} />
+                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Compromise Path Simulator</span>
+              </div>
+
+              {/* Tabs */}
+              <div className="flex rounded-xl bg-[#0B0F19] p-1 border border-white/[0.04]">
+                {attackPaths.map((path) => (
+                  <button
+                    key={path.id}
+                    onClick={() => setActivePathTab(path.id)}
+                    className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
+                      activePathTab === path.id
+                        ? "bg-blue-600 text-white shadow-md"
+                        : "text-gray-400 hover:text-white"
+                    }`}
+                  >
+                    {path.id === "credential-theft" ? "Identity Breach" : path.id === "ransomware" ? "Ransomware" : "Wi-Fi Sniff"}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Selected Path Details */}
+            {attackPaths
+              .filter((p) => p.id === activePathTab)
+              .map((path) => {
+                return (
+                  <div key={path.id} className="space-y-6">
+                    <div className="rounded-xl bg-[#0B0F19]/40 border border-white/[0.03] p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                      <div className="space-y-1.5 max-w-xl">
+                        <h3 className="text-xs font-bold text-white tracking-wide">{path.name}</h3>
+                        <p className="text-[11px] text-gray-500 leading-normal font-sans">{path.description}</p>
+                      </div>
+                      <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[10px] font-bold tracking-wide uppercase shrink-0 border ${
+                        path.isCompromised
+                          ? "bg-red-500/10 text-red-400 border-red-500/20"
+                          : "bg-green-500/10 text-green-400 border-green-500/20"
+                      }`}>
+                        {path.isCompromised ? <XCircle size={12} /> : <CheckCircle size={12} />}
+                        {path.isCompromised ? "Compromised" : "Audit Blocked"}
+                      </span>
+                    </div>
+
+                    {/* Node map container */}
+                    <div className="flex flex-col lg:flex-row items-center justify-between gap-4 px-2 py-6 relative overflow-x-auto">
+                      {path.nodes.map((node, idx) => {
+                        const isLast = idx === path.nodes.length - 1;
+                        const nextLink = path.links.find(l => l.source === node.id);
+                        const isLinkActive = nextLink ? nextLink.isActive : false;
+
+                        let statusColor = "border-white/[0.04] bg-[#111827]/10 text-gray-500";
+                        if (node.status === "active-exploit") {
+                          statusColor = "border-red-500 bg-red-500/5 text-red-400 shadow-[0_0_20px_rgba(239,68,68,0.1)]";
+                        } else if (node.status === "vulnerable") {
+                          statusColor = "border-amber-500/30 bg-amber-500/5 text-amber-500";
+                        } else if (node.status === "secure") {
+                          statusColor = "border-green-500 bg-green-500/5 text-green-400";
+                        }
+
+                        return (
+                          <div key={node.id} className="flex flex-col lg:flex-row items-center w-full lg:w-auto shrink-0">
+                            {/* Node element */}
+                            <div className={`relative flex flex-col p-4 rounded-xl border text-left w-full lg:w-[155px] min-h-[90px] justify-between ${statusColor}`}>
+                              <div>
+                                <span className="text-[8px] font-mono tracking-wider opacity-50 block mb-0.5">NODE {idx + 1}</span>
+                                <span className="text-[10px] font-bold text-white tracking-wide">{node.label}</span>
                               </div>
-                            ) : (
-                              <div className="flex items-center justify-center flex-col text-green-500 font-bold text-lg rotate-90 lg:rotate-0">
-                                <Shield className="text-success fill-success/10 animate-bounce" size={18} />
-                                <span className="text-[8px] uppercase tracking-wider text-success/80 mt-0.5">Blocked</span>
+                              <p className="text-[9px] opacity-65 leading-normal mt-1 font-sans">{node.description}</p>
+                            </div>
+
+                            {/* Connection SVG with Dash flow */}
+                            {!isLast && (
+                              <div className="flex items-center justify-center p-2 w-6 lg:w-12 shrink-0">
+                                <svg className="w-6 lg:w-12 h-4 rotate-90 lg:rotate-0" viewBox="0 0 40 20">
+                                  <line
+                                    x1="0" y1="10" x2="40" y2="10"
+                                    className={`stroke-2 ${
+                                      isLinkActive
+                                        ? "stroke-red-500 exploit-flow-line"
+                                        : "stroke-green-500"
+                                    }`}
+                                  />
+                                </svg>
                               </div>
                             )}
                           </div>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            );
-          })}
-      </div>
-
-      {/* Bottom Section: Prioritized Recommendations */}
-      <div className="rounded-2xl border border-gray-800 bg-surface p-6 shadow-lg space-y-6">
-        <div className="flex items-center justify-between border-b border-gray-800 pb-3">
-          <div className="flex items-center gap-2">
-            <CheckCircle className="text-blue-500" size={18} />
-            <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">Prioritized Cyber Security Control Action Plan</span>
-          </div>
-          <span className="text-xs text-gray-500">Sorted by highest risk reduction</span>
-        </div>
-
-        {recommendations.length === 0 ? (
-          <div className="flex items-center gap-3 rounded-xl bg-green-500/10 p-6 border border-green-500/20 text-green-400">
-            <ShieldCheck size={28} />
-            <div>
-              <h4 className="text-sm font-bold">Hygiene Fully Secured!</h4>
-              <p className="text-xs text-green-500/80 mt-1">
-                Your assessment answers reflect the highest standard of cyber hygiene controls. No immediate action required.
-              </p>
-            </div>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {recommendations.map((rec, idx) => {
-              return (
-                <div key={rec.id} className="relative group flex border border-gray-800 rounded-xl bg-gray-900/10 p-5 gap-4 overflow-hidden transition hover:border-gray-700">
-                  {/* Priority border highlight */}
-                  <div className={`absolute top-0 left-0 bottom-0 w-1 ${
-                    idx <= 1 ? "bg-red-500" : idx <= 4 ? "bg-warning" : "bg-blue-500"
-                  }`} />
-                  
-                  <div className="flex flex-col justify-between w-full space-y-3">
-                    <div className="space-y-1">
-                      <div className="flex items-center justify-between flex-wrap gap-1">
-                        <span className="text-xs font-bold text-white group-hover:text-blue-400 transition-colors">{rec.title}</span>
-                        <span className="inline-flex rounded bg-blue-500/10 border border-blue-500/20 px-2 py-0.5 text-[10px] font-bold text-blue-400">
-                          -{rec.riskReduction} Risk Points
-                        </span>
-                      </div>
-                      <p className="text-xs text-gray-400 leading-relaxed">{rec.description}</p>
-                    </div>
-
-                    {/* Metadata attributes */}
-                    <div className="flex items-center justify-between border-t border-gray-800/80 pt-2.5 text-[10px] text-gray-500 font-semibold">
-                      <span>Cost: <span className="text-gray-300">{rec.cost}</span></span>
-                      <span>Effort: <span className="text-gray-300">{rec.effort}</span></span>
-                      <span className="text-blue-400/90">{rec.ciaBenefit}</span>
-                    </div>
-
-                    {/* Expandable setup steps preview */}
-                    <div className="rounded-lg bg-gray-900/60 p-3 text-[10px] text-gray-400 space-y-1 border border-gray-800/40">
-                      <span className="font-bold text-gray-500 uppercase tracking-wider block mb-1">Remediation Steps</span>
-                      {rec.steps.map((step, sidx) => (
-                        <p key={sidx} className="leading-relaxed font-sans">• {step}</p>
-                      ))}
+                        );
+                      })}
                     </div>
                   </div>
-                </div>
-              );
-            })}
+                );
+              })}
           </div>
-        )}
+
+          {/* Action plan recommendations */}
+          <div className="rounded-2xl border border-white/[0.04] bg-[#111827]/40 backdrop-blur-md p-6 shadow-xl space-y-6 animate-fade-in-up delay-100">
+            <div className="flex items-center justify-between border-b border-white/[0.03] pb-3">
+              <div className="flex items-center gap-2">
+                <ShieldCheck className="text-blue-500" size={16} />
+                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Prioritized Control Plan</span>
+              </div>
+              <span className="text-[10px] text-gray-500 font-medium">Sorted by points drop</span>
+            </div>
+
+            {recommendations.length === 0 ? (
+              <div className="flex items-center gap-4 rounded-xl bg-green-500/5 p-6 border border-green-500/20 text-green-400">
+                <ShieldCheck size={28} className="shrink-0" />
+                <div>
+                  <h4 className="text-xs font-bold">Hygiene Fully Optimal</h4>
+                  <p className="text-[11px] text-green-500/80 mt-1 font-sans">
+                    All compliance controls are active in your baseline assessment.
+                  </p>
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {recommendations.map((rec) => {
+                  const isExpanded = expandedRecId === rec.id;
+                  
+                  return (
+                    <div
+                      key={rec.id}
+                      className="group border border-white/[0.04] rounded-xl bg-[#0B0F19]/20 p-4 transition-all hover:border-white/[0.08]"
+                    >
+                      {/* Flex header */}
+                      <div
+                        onClick={() => setExpandedRecId(isExpanded ? null : rec.id)}
+                        className="flex items-start justify-between gap-4 cursor-pointer"
+                      >
+                        <div className="space-y-1 w-full">
+                          <div className="flex items-center justify-between flex-wrap gap-2">
+                            <h4 className="text-xs font-bold text-white group-hover:text-blue-400 transition-colors flex items-center gap-1.5">
+                              {rec.title}
+                              <span className="inline-flex rounded bg-blue-500/10 border border-blue-500/20 px-1.5 py-0.5 text-[8px] font-bold text-blue-400 uppercase">
+                                -{rec.riskReduction} Risk
+                              </span>
+                            </h4>
+                            <div className="flex items-center gap-1.5 text-[8px] font-bold tracking-wide text-gray-500 uppercase">
+                              <span>COST: <span className="text-gray-300">{rec.cost}</span></span>
+                              <span>&bull;</span>
+                              <span>EFFORT: <span className="text-gray-300">{rec.effort}</span></span>
+                            </div>
+                          </div>
+                          <p className="text-[11px] text-gray-400 leading-normal font-sans">{rec.description}</p>
+                        </div>
+                        <ChevronRight
+                          size={14}
+                          className={`text-gray-500 shrink-0 mt-0.5 transition-transform duration-200 ${
+                            isExpanded ? "rotate-95" : ""
+                          }`}
+                        />
+                      </div>
+
+                      {/* Expanded disclosure steps */}
+                      {isExpanded && (
+                        <div className="mt-4 border-t border-white/[0.03] pt-4 space-y-2.5 text-[10px] text-gray-400 animate-fade-in-up">
+                          <span className="font-bold text-gray-500 uppercase tracking-widest block">Remediation Action Blueprint</span>
+                          <div className="space-y-2">
+                            {rec.steps.map((step, sidx) => (
+                              <p key={sidx} className="leading-relaxed leading-normal font-sans flex items-start gap-1.5">
+                                <span className="text-blue-500 font-bold font-mono">{sidx + 1}.</span>
+                                <span>{step}</span>
+                              </p>
+                            ))}
+                          </div>
+                          <div className="text-[8px] font-bold text-blue-400/90 border-t border-white/[0.03] pt-2 mt-1">
+                            BENEFIT: {rec.ciaBenefit}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );
 }
 
-function SandboxToggle({
+// Sandbox slider item
+function SandboxSliderToggle({
   label,
   checked,
-  onChange
+  onChange,
+  tooltip
 }: {
   label: string;
   checked: boolean;
   onChange: (v: boolean) => void;
+  tooltip: string;
 }) {
   return (
-    <label className="flex items-center justify-between rounded-xl border border-gray-800 bg-[#0B0F19]/40 p-3 transition hover:border-gray-700 cursor-pointer">
+    <div className="tooltip-trigger flex items-center justify-between rounded-xl border border-white/[0.04] bg-[#0B0F19]/40 p-3 transition hover:border-white/[0.08]">
       <span className="text-xs font-semibold text-gray-300">{label}</span>
       <button
         type="button"
         role="switch"
         aria-checked={checked}
         onClick={() => onChange(!checked)}
-        className={`relative inline-flex h-5 w-10 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500/60 focus:ring-offset-1 focus:ring-offset-[#0B0F19] ${
+        className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-1 focus:ring-blue-500/50 ${
           checked ? "bg-blue-600" : "bg-gray-800"
         }`}
       >
         <span
           className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
-            checked ? "translate-x-5" : "translate-x-0"
+            checked ? "translate-x-4" : "translate-x-0"
           }`}
         />
       </button>
-    </label>
+
+      {/* Tooltip */}
+      <div className="tooltip-box bottom-full right-4 mb-2 w-48 rounded-lg border border-white/[0.06] bg-[#161B26] p-2.5 text-left text-[9px] text-gray-400 shadow-xl leading-normal">
+        <span className="font-bold text-white block mb-0.5">Control Action</span>
+        {tooltip}
+      </div>
+    </div>
   );
 }
+
+function LoaderSpinner() {
+  return (
+    <div className="flex flex-col items-center justify-center space-y-3">
+      <RefreshCw className="animate-spin text-blue-500" size={32} />
+      <span className="text-xs text-gray-500 uppercase tracking-widest font-semibold">Initializing Command Console</span>
+    </div>
+  );
+}
+
+

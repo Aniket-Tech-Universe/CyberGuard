@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useAssessmentStore } from "@/stores/assessment-store";
 import {
@@ -10,146 +11,381 @@ import {
   TrendingDown,
   LayoutDashboard,
   HelpCircle,
-  Play
+  Play,
+  Cpu,
+  Lock,
+  Globe,
+  Database,
+  Terminal,
+  Activity,
+  FileCheck
 } from "lucide-react";
 
 export default function HomePage() {
   const { isSubmitted } = useAssessmentStore();
+  
+  // Interactive mock dashboard preview local state
+  const [mockMfa, setMockMfa] = useState(false);
+  const [mockRisk, setMockRisk] = useState(78);
+  const [activeCheckStep, setActiveCheckStep] = useState(0);
+
+  // Auto transition checkmarks in preview
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setActiveCheckStep((prev) => (prev + 1) % 4);
+    }, 2000);
+    return () => clearInterval(timer);
+  }, []);
+
+  // Update risk index when toggling MFA in mock
+  const handleToggleMockMfa = () => {
+    setMockMfa(!mockMfa);
+    setMockRisk(mockMfa ? 78 : 34);
+  };
 
   return (
-    <div className="space-y-16 pb-12">
-      {/* Hero Section */}
-      <section className="relative overflow-hidden rounded-3xl border border-gray-800/80 bg-gradient-to-br from-[#111827] via-[#0B0F19] to-[#1E1B4B] px-6 py-16 text-center shadow-2xl sm:px-12 sm:py-24">
-        {/* Ambient glow backgrounds */}
-        <div className="absolute -left-1/4 -top-1/4 h-96 w-96 rounded-full bg-blue-500/10 blur-3xl" />
-        <div className="absolute -bottom-1/4 -right-1/4 h-96 w-96 rounded-full bg-purple-500/10 blur-3xl" />
+    <div className="space-y-24 pb-20 bg-grid-pattern relative">
+      {/* Background glowing blobs */}
+      <div className="absolute top-10 left-1/4 h-[400px] w-[400px] rounded-full bg-blue-500/5 blur-[120px] pointer-events-none" />
+      <div className="absolute top-40 right-1/4 h-[400px] w-[400px] rounded-full bg-purple-500/5 blur-[120px] pointer-events-none" />
 
-        <div className="relative mx-auto max-w-3xl space-y-6">
-          <div className="inline-flex items-center gap-1.5 rounded-full bg-blue-500/10 px-4 py-1.5 text-xs font-semibold text-blue-400 border border-blue-500/20">
-            <ShieldCheck size={14} />
-            IBM SkillsBuild GTU SBTP 2026 Project
-          </div>
-          <h1 className="text-4xl font-extrabold tracking-tight text-white sm:text-5xl lg:text-6xl">
-            Visualize Cyber Risk. <br />
-            <span className="bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-500 bg-clip-text text-transparent">
-              Block Exploit Paths.
-            </span>
-          </h1>
-          <p className="mx-auto max-w-xl text-base text-gray-400 sm:text-lg">
-            CyberGuard is an interactive simulation dashboard built to teach cyber hygiene. Analyze vulnerabilities, map kill-chains, test What-If mitigations, and export security audits.
-          </p>
-          <div className="flex flex-col sm:flex-row justify-center items-center gap-4 pt-4">
-            <Link
-              href={isSubmitted ? "/dashboard" : "/assessment"}
-              className="group flex items-center gap-2 rounded-xl bg-blue-600 px-6 py-3.5 text-sm font-semibold text-white shadow-lg transition-all duration-200 hover:bg-blue-500 hover:shadow-blue-500/20 hover:scale-[1.02]"
-            >
-              {isSubmitted ? (
-                <>
-                  <LayoutDashboard size={18} />
-                  View Dashboard
-                </>
-              ) : (
-                <>
-                  <Play size={16} fill="currentColor" />
-                  Start Risk Assessment
-                </>
-              )}
-              <ArrowRight size={16} className="transition-transform group-hover:translate-x-0.5" />
-            </Link>
-            <Link
-              href="/about-project"
-              className="flex items-center gap-2 rounded-xl border border-gray-800 bg-gray-900/50 px-6 py-3.5 text-sm font-semibold text-gray-300 transition-all duration-200 hover:bg-gray-800 hover:text-white"
-            >
-              Learn More
-            </Link>
-          </div>
+      {/* 1. Hero Section */}
+      <section className="relative mx-auto max-w-5xl pt-12 md:pt-20 text-center space-y-8 animate-fade-in-up">
+        {/* Academic Badge */}
+        <div className="inline-flex items-center gap-2 rounded-full border border-white/[0.04] bg-white/[0.02] px-4 py-1.5 text-xs font-semibold text-gray-400 backdrop-blur-md">
+          <span className="flex h-1.5 w-1.5 rounded-full bg-blue-500" />
+          IBM SkillsBuild &bull; GTU SBTP 2026 Academic Project
         </div>
 
-        {/* Hero Interactive Mini Visualizer Mock */}
-        <div className="mx-auto mt-12 max-w-xl rounded-xl border border-gray-800 bg-[#0B0F19]/90 p-4 shadow-xl">
-          <div className="flex items-center justify-between border-b border-gray-800 pb-3">
-            <span className="text-xs font-semibold uppercase tracking-wider text-gray-500">Live Simulation Preview</span>
-            <div className="flex gap-1.5">
-              <span className="h-2 w-2 rounded-full bg-red-500" />
-              <span className="h-2 w-2 rounded-full bg-yellow-500" />
-              <span className="h-2 w-2 rounded-full bg-green-500" />
-            </div>
-          </div>
-          <div className="mt-4 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs font-medium text-gray-400">
-            <div className="flex flex-col items-center p-3.5 rounded-lg border border-red-500/20 bg-red-500/5 text-red-400 max-w-[130px] w-full text-center">
-              <span className="mb-1 text-[10px] uppercase text-red-500 font-bold">Vulnerability</span>
-              Weak Passwords
-            </div>
-            <div className="text-red-500 text-lg rotate-90 sm:rotate-0">&rarr;</div>
-            <div className="flex flex-col items-center p-3.5 rounded-lg border border-red-500/20 bg-red-500/5 text-red-400 max-w-[130px] w-full text-center animate-pulse">
-              <span className="mb-1 text-[10px] uppercase text-red-500 font-bold">Exploit Stage</span>
-              Credential Theft
-            </div>
-            <div className="text-green-500 text-lg rotate-90 sm:rotate-0">| (Blocked)</div>
-            <div className="flex flex-col items-center p-3.5 rounded-lg border border-green-500/20 bg-green-500/5 text-green-400 max-w-[130px] w-full text-center">
-              <span className="mb-1 text-[10px] uppercase text-green-500 font-bold">Mitigation</span>
-              MFA Active
-            </div>
-          </div>
-        </div>
-      </section>
+        <h1 className="text-5xl font-extrabold tracking-tight text-white sm:text-6xl md:text-7xl leading-tight">
+          Quantify Cyber Risk. <br />
+          <span className="bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-500 bg-clip-text text-transparent">
+            Block Compromise Paths.
+          </span>
+        </h1>
 
-      {/* Feature Cards Grid */}
-      <section className="space-y-6">
-        <div className="text-center space-y-2">
-          <h2 className="text-2xl font-bold text-white sm:text-3xl">Core Simulation Capabilities</h2>
-          <p className="text-sm text-gray-400 max-w-md mx-auto">
-            CyberGuard processes security questions into functional intelligence.
-          </p>
-        </div>
+        <p className="mx-auto max-w-2xl text-base sm:text-lg text-gray-400 leading-relaxed">
+          CyberGuard translates personal habits into quantifiable security scores. Simulate exploit chains, test real-time What-If mitigations, and compile compliance audit reports on a sleek SaaS dashboard.
+        </p>
 
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          <FeatureCard
-            icon={HelpCircle}
-            title="Risk Assessment"
-            description="Complete a 10-question security audit spanning Identity, Device, Network, and Data controls."
-            color="border-blue-500/10 hover:border-blue-500/30"
-            iconColor="text-blue-500 bg-blue-500/10"
-          />
-          <FeatureCard
-            icon={TrendingDown}
-            title="CIA Impact Engine"
-            description="Analyze how vulnerabilities degrade Confidentiality, Integrity, and Availability components."
-            color="border-purple-500/10 hover:border-purple-500/30"
-            iconColor="text-purple-500 bg-purple-500/10"
-          />
-          <FeatureCard
-            icon={AlertTriangle}
-            title="Attack Path Simulator"
-            description="Visualize the step-by-step kill-chains threat actors use to breach local and cloud systems."
-            color="border-red-500/10 hover:border-red-500/30"
-            iconColor="text-red-500 bg-red-500/10"
-          />
-          <FeatureCard
-            icon={Zap}
-            title="What-If Sandbox"
-            description="Toggle security controls (MFA, updates, antivirus) to watch risk levels drop in real-time."
-            color="border-green-500/10 hover:border-green-500/30"
-            iconColor="text-green-500 bg-green-500/10"
-          />
-        </div>
-      </section>
-
-      {/* IBM SkillsBuild CTA */}
-      <section className="rounded-2xl border border-gray-800 bg-gray-900/30 p-8 sm:p-12">
-        <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-          <div className="space-y-2 text-center md:text-left">
-            <h3 className="text-lg font-bold text-white">Academic Learning Outcomes</h3>
-            <p className="text-sm text-gray-400 max-w-xl">
-              CyberGuard addresses key goals of the GTU SBTP 2026 security syllabus: understanding the Principle of Least Privilege, securing the transport layer, implementing identity boundaries, and establishing redundancy configurations.
-            </p>
-          </div>
+        <div className="flex flex-col sm:flex-row justify-center items-center gap-4 pt-4">
+          <Link
+            href={isSubmitted ? "/dashboard" : "/assessment"}
+            className="group flex items-center gap-2 rounded-xl bg-blue-600 px-6 py-3.5 text-sm font-semibold text-white shadow-lg shadow-blue-500/20 transition-all duration-200 hover:bg-blue-500 hover:shadow-blue-500/30 hover:scale-[1.02]"
+          >
+            {isSubmitted ? (
+              <>
+                <LayoutDashboard size={16} />
+                Open Command Center
+              </>
+            ) : (
+              <>
+                <Play size={14} fill="currentColor" />
+                Initialize Assessment
+              </>
+            )}
+            <ArrowRight size={15} className="transition-transform group-hover:translate-x-0.5" />
+          </Link>
           <Link
             href="/about-project"
-            className="shrink-0 flex items-center gap-1.5 text-xs font-semibold text-blue-400 hover:text-blue-300 transition-colors"
+            className="flex items-center gap-2 rounded-xl border border-white/[0.06] bg-white/[0.02] hover:bg-white/[0.04] px-6 py-3.5 text-sm font-semibold text-gray-300 transition-all duration-200 hover:text-white"
           >
-            Review Project Details
-            <ArrowRight size={14} />
+            Review Project Spec
+          </Link>
+        </div>
+      </section>
+
+      {/* 2. Interactive Dashboard Preview Widget */}
+      <section className="mx-auto max-w-5xl animate-fade-in-up delay-100">
+        <div className="relative rounded-2xl border border-white/[0.05] bg-[#0E131F]/90 p-1.5 shadow-2xl backdrop-blur-md">
+          {/* Subtle panel header bar */}
+          <div className="flex items-center justify-between border-b border-white/[0.04] px-4 py-3 bg-white/[0.01] rounded-t-xl">
+            <div className="flex items-center gap-2">
+              <span className="h-2.5 w-2.5 rounded-full bg-red-500/80" />
+              <span className="h-2.5 w-2.5 rounded-full bg-yellow-500/80" />
+              <span className="h-2.5 w-2.5 rounded-full bg-green-500/80" />
+              <span className="ml-2 text-xs font-semibold tracking-wider text-gray-500 uppercase">Interactive Simulation Console</span>
+            </div>
+            <div className="flex items-center gap-1.5 text-[10px] text-gray-400 border border-white/[0.05] bg-white/[0.02] px-2.5 py-1 rounded-md">
+              <Activity size={10} className="text-blue-500 animate-pulse" />
+              SIMULATOR ALIVE
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-6 p-6">
+            {/* Left Col: Analytics preview */}
+            <div className="md:col-span-8 space-y-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {/* Risk dial */}
+                <div className="rounded-xl border border-white/[0.04] bg-white/[0.01] p-5 flex flex-col items-center text-center justify-center space-y-3">
+                  <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Hygiene Risk Index</span>
+                  <div className="relative flex h-28 w-28 items-center justify-center">
+                    <svg className="h-full w-full -rotate-90" viewBox="0 0 100 100">
+                      <circle cx="50" cy="50" r="40" className="stroke-white/[0.03]" strokeWidth="8" fill="transparent" />
+                      <circle
+                        cx="50"
+                        cy="50"
+                        r="40"
+                        className="stroke-blue-500 transition-all duration-700 ease-out"
+                        strokeWidth="8"
+                        fill="transparent"
+                        strokeDasharray="251.2"
+                        strokeDashoffset={251.2 - (251.2 * mockRisk) / 100}
+                        strokeLinecap="round"
+                      />
+                    </svg>
+                    <div className="absolute flex flex-col items-center">
+                      <span className="text-2xl font-extrabold text-white transition-all duration-700">{mockRisk}</span>
+                      <span className="text-[8px] uppercase tracking-wider text-gray-500">Risk Score</span>
+                    </div>
+                  </div>
+                  <span className={`text-[10px] font-bold uppercase tracking-wider ${mockRisk > 50 ? "text-danger" : "text-success"}`}>
+                    {mockRisk > 50 ? "HIGH RISK Posture" : "SECURED Posture"}
+                  </span>
+                </div>
+
+                {/* Security Health */}
+                <div className="rounded-xl border border-white/[0.04] bg-white/[0.01] p-5 flex flex-col items-center text-center justify-center space-y-3">
+                  <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Security Health Score</span>
+                  <div className="relative flex h-28 w-28 items-center justify-center">
+                    <svg className="h-full w-full -rotate-90" viewBox="0 0 100 100">
+                      <circle cx="50" cy="50" r="40" className="stroke-white/[0.03]" strokeWidth="8" fill="transparent" />
+                      <circle
+                        cx="50"
+                        cy="50"
+                        r="40"
+                        className="stroke-indigo-500 transition-all duration-700 ease-out"
+                        strokeWidth="8"
+                        fill="transparent"
+                        strokeDasharray="251.2"
+                        strokeDashoffset={251.2 - (251.2 * (100 - mockRisk)) / 100}
+                        strokeLinecap="round"
+                      />
+                    </svg>
+                    <div className="absolute flex flex-col items-center">
+                      <span className="text-2xl font-extrabold text-white transition-all duration-700">{100 - mockRisk}</span>
+                      <span className="text-[8px] uppercase tracking-wider text-gray-500">Health Index</span>
+                    </div>
+                  </div>
+                  <span className={`text-[10px] font-bold uppercase tracking-wider ${mockRisk > 50 ? "text-red-400" : "text-indigo-400"}`}>
+                    {mockRisk > 50 ? "Vulnerable Level" : "Optimal Level"}
+                  </span>
+                </div>
+              </div>
+
+              {/* Exploit timeline simulation */}
+              <div className="rounded-xl border border-white/[0.04] bg-white/[0.01] p-5 space-y-3">
+                <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest block">Simulated Threat Vector</span>
+                <div className="flex flex-col sm:flex-row justify-between items-center gap-4 text-xs">
+                  <div className="flex items-center gap-2 p-3 rounded-lg border border-red-500/20 bg-red-500/5 text-red-400 w-full sm:w-auto">
+                    <AlertTriangle size={14} className="shrink-0 animate-pulse" />
+                    <span>Insecure Login</span>
+                  </div>
+                  <div className="text-gray-600 font-bold rotate-90 sm:rotate-0">&rarr;</div>
+                  
+                  {/* Dynamic connector link */}
+                  <div className="flex items-center gap-2 p-3 rounded-lg border w-full sm:w-auto transition-all duration-500 bg-white/[0.02] border-white/[0.05]">
+                    {mockMfa ? (
+                      <span className="text-green-400 font-semibold flex items-center gap-1.5">
+                        <ShieldCheck size={14} />
+                        MFA Active (Blocked)
+                      </span>
+                    ) : (
+                      <span className="text-red-400 font-semibold flex items-center gap-1.5 animate-pulse">
+                        <AlertTriangle size={14} />
+                        No MFA (Exploited)
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="text-gray-600 font-bold rotate-90 sm:rotate-0">&rarr;</div>
+                  <div className={`flex items-center gap-2 p-3 rounded-lg border w-full sm:w-auto transition-all duration-500 ${
+                    mockMfa ? "border-green-500/20 bg-green-500/5 text-green-400" : "border-red-500/20 bg-red-500/5 text-red-400"
+                  }`}>
+                    {mockMfa ? (
+                      <>
+                        <ShieldCheck size={14} />
+                        <span>Database Safe</span>
+                      </>
+                    ) : (
+                      <>
+                        <AlertTriangle size={14} className="animate-bounce" />
+                        <span>Data Compromised</span>
+                      </>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Right Col: Interactive Control Sidebar */}
+            <div className="md:col-span-4 flex flex-col justify-between border-t md:border-t-0 md:border-l border-white/[0.04] pt-6 md:pt-0 md:pl-6 space-y-6">
+              <div className="space-y-4">
+                <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest block">Sandbox Control Console</span>
+                <p className="text-xs text-gray-400 leading-relaxed">
+                  Toggle controls below to watch how risk recalculates and blocks compromise paths in real-time.
+                </p>
+                <div className="space-y-3">
+                  <div
+                    onClick={handleToggleMockMfa}
+                    className="flex items-center justify-between p-3 rounded-lg border border-white/[0.04] bg-white/[0.01] hover:bg-white/[0.02] cursor-pointer transition"
+                  >
+                    <span className="text-xs font-semibold text-gray-300">Enforce Multi-Factor Auth</span>
+                    <button
+                      type="button"
+                      className={`relative inline-flex h-4 w-8 shrink-0 cursor-pointer rounded-full transition-colors ${
+                        mockMfa ? "bg-blue-600" : "bg-gray-800"
+                      }`}
+                    >
+                      <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition ${
+                        mockMfa ? "translate-x-4" : "translate-x-0"
+                      }`} />
+                    </button>
+                  </div>
+
+                  <div className="flex items-center justify-between p-3 rounded-lg border border-white/[0.02] bg-white/[0.005] opacity-50 cursor-not-allowed">
+                    <span className="text-xs font-semibold text-gray-400">Install Endpoint Antivirus</span>
+                    <button type="button" className="relative inline-flex h-4 w-8 shrink-0 rounded-full bg-gray-800">
+                      <span className="inline-block h-4 w-4 transform rounded-full bg-white translate-x-0" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Feed ticker */}
+              <div className="rounded-lg bg-white/[0.01] border border-white/[0.04] p-3 text-[10px] text-gray-500 font-mono space-y-1">
+                <div className="flex items-center justify-between text-gray-400 border-b border-white/[0.03] pb-1.5 mb-1.5">
+                  <span>TELEMETRY TICKER</span>
+                  <span>TIME UTC</span>
+                </div>
+                <div className={activeCheckStep === 0 ? "text-blue-400 transition-colors" : ""}>
+                  {activeCheckStep === 0 ? "> Evaluating Password Security..." : "  Evaluating Password Security..."}
+                </div>
+                <div className={activeCheckStep === 1 ? "text-blue-400 transition-colors" : ""}>
+                  {activeCheckStep === 1 ? "> Checking Auth Strength..." : "  Checking Auth Strength..."}
+                </div>
+                <div className={activeCheckStep === 2 ? "text-indigo-400 transition-colors" : ""}>
+                  {activeCheckStep === 2 ? "> Simulating Kill-Chains..." : "  Simulating Kill-Chains..."}
+                </div>
+                <div className={activeCheckStep === 3 ? "text-green-400 transition-colors" : ""}>
+                  {activeCheckStep === 3 ? "> Risk calculations synced." : "  Risk calculations synced."}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 3. "How CyberGuard Works" Timeline Section */}
+      <section className="mx-auto max-w-5xl space-y-12">
+        <div className="text-center space-y-3">
+          <h2 className="text-3xl font-extrabold text-white">How CyberGuard Works</h2>
+          <p className="text-sm text-gray-400 max-w-md mx-auto">
+            A comprehensive pipeline to analyze, visualize, and mitigate vulnerabilities.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          <TimelineStep
+            step="01"
+            title="Audit Posture"
+            description="Complete a 10-question cyber hygiene questionnaire analyzing key threat domains."
+            icon={HelpCircle}
+          />
+          <TimelineStep
+            step="02"
+            title="Quantify Metrics"
+            description="Our engines process risk parameters into index levels and CIA percentage charts."
+            icon={TrendingDown}
+          />
+          <TimelineStep
+            step="03"
+            title="Simulate Vectors"
+            description="Observe step-by-step kill-chains threat actors map to compromise local networks."
+            icon={AlertTriangle}
+          />
+          <TimelineStep
+            step="04"
+            title="Apply Sandbox"
+            description="Toggle security controls in the sandbox to watch vulnerabilities block in real-time."
+            icon={Zap}
+          />
+        </div>
+      </section>
+
+      {/* 4. Statistics / Highlights Section */}
+      <section className="mx-auto max-w-5xl rounded-2xl border border-white/[0.04] bg-white/[0.01] p-8 md:p-12 relative overflow-hidden">
+        <div className="absolute top-0 right-0 h-48 w-48 rounded-full bg-blue-500/5 blur-3xl pointer-events-none" />
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+          <StatCounter value="0%" label="Server Overhead" desc="100% Client-side state" />
+          <StatCounter value="10" label="Vulnerability Domains" desc="Comprehensive audit trail" />
+          <StatCounter value="3" label="Exploit Vectors" desc="Real-time timeline sims" />
+          <StatCounter value="0.0s" label="Calculation Latency" desc="Instant sandbox sync" />
+        </div>
+      </section>
+
+      {/* 5. Feature Showcase Grid */}
+      <section className="mx-auto max-w-5xl space-y-12">
+        <div className="text-center space-y-3">
+          <h2 className="text-3xl font-extrabold text-white">Security Command Core</h2>
+          <p className="text-sm text-gray-400 max-w-md mx-auto">
+            Packed with educational capabilities to build threat mitigation intuition.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <ShowcaseCard
+            icon={Lock}
+            title="Principle of Least Privilege"
+            description="Learn why separating admin accounts prevents lateral movements and privilege escalation breaches."
+            domain="Identity Boundary"
+          />
+          <ShowcaseCard
+            icon={Globe}
+            title="Transport Layer Security"
+            description="Evaluate how securing open Wi-Fi routes via encryption tunnels frustrates MitM exploits."
+            domain="Network Bound"
+          />
+          <ShowcaseCard
+            icon={Database}
+            title="3-2-1 Data Protection"
+            description="Discover why offline physical backups block complete encryption ransomware blackmail vectors."
+            domain="Data Integrity"
+          />
+          <ShowcaseCard
+            icon={Cpu}
+            title="System Patch Integrity"
+            description="Visualize how out-of-date components act as direct entry keys for threat actors."
+            domain="Endpoint Defense"
+          />
+          <ShowcaseCard
+            icon={Terminal}
+            title="Clean Software Supply Chain"
+            description="Audit browser sandbox configurations and unverified file installations."
+            domain="Application Defense"
+          />
+          <ShowcaseCard
+            icon={FileCheck}
+            title="Compliance Audit trail"
+            description="Export detailed security blueprints compiled dynamically into vector PDF reports."
+            domain="Compliance Report"
+          />
+        </div>
+      </section>
+
+      {/* 6. Call to Action Panel */}
+      <section className="mx-auto max-w-4xl text-center space-y-6 rounded-2xl border border-white/[0.05] bg-gradient-to-b from-white/[0.02] to-transparent p-12">
+        <h2 className="text-3xl font-bold text-white">Assess Your Risk Posture Now</h2>
+        <p className="mx-auto max-w-lg text-xs text-gray-400 leading-relaxed">
+          Ready to run the cyber risk visualization simulator? Run our 10-domain questionnaire to establish your baseline security profile.
+        </p>
+        <div className="pt-2">
+          <Link
+            href={isSubmitted ? "/dashboard" : "/assessment"}
+            className="group inline-flex items-center gap-2 rounded-xl bg-blue-600 hover:bg-blue-500 px-6 py-3 text-xs font-semibold text-white shadow-lg transition-all"
+          >
+            {isSubmitted ? "Open Security Dashboard" : "Begin Interactive Audit"}
+            <ArrowRight size={14} className="transition-transform group-hover:translate-x-0.5" />
           </Link>
         </div>
       </section>
@@ -157,28 +393,72 @@ export default function HomePage() {
   );
 }
 
-function FeatureCard({
+function TimelineStep({
+  step,
+  title,
+  description,
+  icon: Icon
+}: {
+  step: string;
+  title: string;
+  description: string;
+  icon: React.ElementType;
+}) {
+  return (
+    <div className="relative group rounded-2xl border border-white/[0.04] bg-white/[0.01] p-6 space-y-4 hover:border-white/[0.08] transition duration-200">
+      <div className="flex items-center justify-between">
+        <span className="text-2xl font-black text-white/5 group-hover:text-blue-500/10 transition-colors">{step}</span>
+        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-500/10 text-blue-400 border border-blue-500/20">
+          <Icon size={14} />
+        </div>
+      </div>
+      <h3 className="text-sm font-bold text-white tracking-wide">{title}</h3>
+      <p className="text-[11px] text-gray-500 leading-relaxed">{description}</p>
+    </div>
+  );
+}
+
+function StatCounter({
+  value,
+  label,
+  desc
+}: {
+  value: string;
+  label: string;
+  desc: string;
+}) {
+  return (
+    <div className="space-y-1">
+      <div className="text-3xl font-extrabold text-white tracking-tight">{value}</div>
+      <div className="text-xs font-bold text-gray-400 tracking-wide">{label}</div>
+      <div className="text-[10px] text-gray-500">{desc}</div>
+    </div>
+  );
+}
+
+function ShowcaseCard({
   icon: Icon,
   title,
   description,
-  color,
-  iconColor
+  domain
 }: {
   icon: React.ElementType;
   title: string;
   description: string;
-  color: string;
-  iconColor: string;
+  domain: string;
 }) {
   return (
-    <div className={`group rounded-2xl border bg-gray-900/20 p-6 shadow-md transition-all duration-200 hover:scale-[1.01] ${color}`}>
-      <div className={`flex h-10 w-10 items-center justify-center rounded-xl font-semibold shadow-inner ${iconColor}`}>
-        <Icon size={20} />
+    <div className="premium-card rounded-2xl p-6 space-y-4">
+      <div className="flex items-center justify-between">
+        <span className="rounded bg-blue-500/5 px-2 py-0.5 text-[8px] font-bold text-blue-400 border border-blue-500/10 uppercase tracking-wider">
+          {domain}
+        </span>
+        <div className="text-gray-400">
+          <Icon size={16} />
+        </div>
       </div>
-      <h3 className="mt-4 text-base font-bold text-white group-hover:text-blue-400 transition-colors">
-        {title}
-      </h3>
-      <p className="mt-2 text-xs text-gray-400 leading-relaxed">{description}</p>
+      <h3 className="text-xs font-bold text-white tracking-wide">{title}</h3>
+      <p className="text-[11px] text-gray-500 leading-relaxed font-sans">{description}</p>
     </div>
   );
 }

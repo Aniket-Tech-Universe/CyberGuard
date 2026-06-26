@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAssessmentStore } from "@/stores/assessment-store";
 import { QUESTIONS } from "@/data/questions";
@@ -12,15 +12,17 @@ import { generatePdfReport } from "@/lib/pdf-report";
 import {
   FileText,
   FileDown,
-  ShieldAlert,
-  ArrowRight,
   CheckCircle,
-  HelpCircle
+  HelpCircle,
+  ChevronRight,
+  Loader2,
+  Activity
 } from "lucide-react";
 
 export default function ReportsPage() {
   const router = useRouter();
   const { answers, isSubmitted, whatIfToggles } = useAssessmentStore();
+  const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
 
   useEffect(() => {
     if (!isSubmitted) {
@@ -30,19 +32,9 @@ export default function ReportsPage() {
 
   if (!isSubmitted) {
     return (
-      <div className="flex min-h-[50vh] flex-col items-center justify-center space-y-4 text-center">
-        <ShieldAlert size={48} className="text-warning animate-bounce" />
-        <h2 className="text-xl font-bold text-white">No Reports Found</h2>
-        <p className="text-sm text-gray-400 max-w-sm">
-          Please complete the 10-question cyber hygiene assessment to generate and view your security audit report.
-        </p>
-        <button
-          onClick={() => router.push("/assessment")}
-          className="inline-flex items-center gap-1.5 rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white shadow-md hover:bg-blue-500"
-        >
-          Start Assessment
-          <ArrowRight size={16} />
-        </button>
+      <div className="flex min-h-[60vh] flex-col items-center justify-center space-y-4 text-center">
+        <Loader2 className="animate-spin text-blue-500" size={32} />
+        <span className="text-xs text-gray-500 uppercase tracking-widest font-semibold">Loading Report Archive</span>
       </div>
     );
   }
@@ -57,88 +49,139 @@ export default function ReportsPage() {
     generatePdfReport(risk, cia, attackPaths, recommendations);
   };
 
+  // Tooltip descriptions for categories
+  const categoryTooltips: Record<string, string> = {
+    "Identity & Access Control": "Audits authentication bounds and brute-force defenses.",
+    "System & Endpoint Security": "Audits device-level updates, antivirus, and privilege limitations.",
+    "Network Security": "Audits packet encryption, untrusted connections, and browser sandboxing.",
+    "Data Protection & Backups": "Audits backup redundancy strategies and software supply integrity."
+  };
+
   return (
-    <div className="space-y-8 pb-16">
+    <div className="space-y-8 pb-16 bg-grid-pattern relative">
+      {/* Background Glow */}
+      <div className="absolute top-20 left-10 h-[300px] w-[300px] rounded-full bg-purple-500/5 blur-[100px] pointer-events-none" />
+
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-gray-800 pb-5">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-white/[0.04] pb-5">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-white sm:text-3xl">Security Audit Archive</h1>
+          <h1 className="text-3xl font-extrabold tracking-tight text-white">Security Audit Registry</h1>
           <p className="mt-1 text-sm text-gray-400">
-            Review your answered questions audit trail and export reports.
+            Review detailed question logs and download portable vector reports.
           </p>
         </div>
         <button
           onClick={handleDownload}
-          className="flex items-center gap-1.5 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white shadow-md hover:bg-blue-500 hover:shadow-blue-500/20 hover:scale-[1.01] transition-all"
+          className="flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-xs font-semibold text-white shadow-lg shadow-blue-500/10 hover:bg-blue-500 hover:scale-[1.01] transition-all"
         >
-          <FileDown size={15} />
-          Download PDF Report
+          <FileDown size={13} />
+          Export Compliance Report
         </button>
       </div>
 
-      {/* Audit Overview card */}
-      <div className="rounded-2xl border border-gray-800 bg-surface p-6 shadow-xl space-y-4">
-        <div className="flex items-center gap-2 text-blue-400 border-b border-gray-800/80 pb-3">
-          <FileText size={18} />
-          <h2 className="text-sm font-bold uppercase tracking-wider text-gray-300">Audit Summary Details</h2>
+      {/* Audit Meta Indicators Cards */}
+      <div className="rounded-2xl border border-white/[0.04] bg-[#111827]/40 backdrop-blur-md p-6 shadow-xl space-y-4 animate-fade-in-up">
+        <div className="flex items-center gap-2 text-gray-400 border-b border-white/[0.03] pb-3">
+          <FileText size={15} className="text-blue-400" />
+          <h2 className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Registry Overview</h2>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-          <div className="rounded-xl border border-gray-800 bg-[#0B0F19]/40 p-4 space-y-1">
-            <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Report Format</span>
-            <p className="text-xs font-bold text-white">Portable Document Format (PDF)</p>
+          <div className="rounded-xl border border-white/[0.04] bg-[#0B0F19]/40 p-4 space-y-1.5">
+            <span className="text-[9px] font-bold text-gray-500 uppercase tracking-wider block">Document Specifications</span>
+            <p className="text-xs font-bold text-white">Portable PDF &bull; A4 Vector Grid</p>
           </div>
-          <div className="rounded-xl border border-gray-800 bg-[#0B0F19]/40 p-4 space-y-1">
-            <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Assessment Status</span>
-            <p className="text-xs font-bold text-green-400 flex items-center gap-1">
-              <CheckCircle size={12} /> Complete
+          <div className="rounded-xl border border-white/[0.04] bg-[#0B0F19]/40 p-4 space-y-1.5">
+            <span className="text-[9px] font-bold text-gray-500 uppercase tracking-wider block">Assessment Integrity</span>
+            <p className="text-xs font-bold text-green-400 flex items-center gap-1.5">
+              <CheckCircle size={13} /> Statically Checked &amp; Verified
             </p>
           </div>
-          <div className="rounded-xl border border-gray-800 bg-[#0B0F19]/40 p-4 space-y-1">
-            <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Risk Level (Active)</span>
-            <p className={`text-xs font-bold ${risk.color}`}>{risk.level} ({risk.score}/100)</p>
+          <div className="rounded-xl border border-white/[0.04] bg-[#0B0F19]/40 p-4 space-y-1.5">
+            <span className="text-[9px] font-bold text-gray-500 uppercase tracking-wider block">Active Baseline Risk Index</span>
+            <p className={`text-xs font-bold ${
+              risk.score > 60 ? "text-red-400" : risk.score > 30 ? "text-amber-400" : "text-green-400"
+            }`}>
+              {risk.level} ({risk.score}/100 Risk Points)
+            </p>
           </div>
         </div>
       </div>
 
-      {/* Answers List Trail */}
-      <div className="space-y-6">
-        <h3 className="text-lg font-bold text-white flex items-center gap-2">
-          <HelpCircle className="text-blue-500" size={18} />
-          Your Submitted Responses
+      {/* Accordion Answers Trail */}
+      <div className="space-y-5 animate-fade-in-up delay-100">
+        <h3 className="text-base font-bold text-white flex items-center gap-2 tracking-wide">
+          <Activity className="text-blue-500" size={16} />
+          Interactive Answer Audit Trail
         </h3>
 
-        <div className="space-y-4">
+        <div className="space-y-3.5">
           {QUESTIONS.map((q, idx) => {
             const selectedVal = answers[q.id];
             const option = q.options.find((o) => o.value === selectedVal);
             const isSecure = option?.scoreImpact === 0;
+            const isExpanded = expandedIndex === idx;
 
             return (
               <div
                 key={q.id}
-                className="rounded-xl border border-gray-800 bg-[#0B0F19]/20 p-5 space-y-2.5 transition hover:border-gray-700"
+                className="group rounded-xl border border-white/[0.04] bg-[#111827]/10 p-5 space-y-3.5 transition hover:border-white/[0.08]"
               >
-                <div className="flex items-start justify-between flex-wrap gap-2">
-                  <div className="space-y-1">
-                    <span className="text-[9px] font-bold text-blue-400/90 uppercase tracking-wider">
-                      Question {idx + 1} &bull; {q.category}
-                    </span>
-                    <h4 className="text-xs font-bold text-white leading-normal">{q.question}</h4>
+                {/* Header click toggle */}
+                <div
+                  onClick={() => setExpandedIndex(isExpanded ? null : idx)}
+                  className="flex items-start justify-between gap-4 cursor-pointer"
+                >
+                  <div className="space-y-1 w-full">
+                    <div className="flex items-center gap-2">
+                      <span className="text-[9px] font-mono tracking-wider opacity-50">QUESTION {idx + 1}</span>
+                      <span>&bull;</span>
+                      
+                      {/* Tooltip trigger for category */}
+                      <span className="tooltip-trigger inline-flex items-center gap-1 text-[9px] font-bold text-blue-400/90 uppercase tracking-widest cursor-help">
+                        {q.category}
+                        <HelpCircle size={10} className="opacity-60" />
+                        
+                        {/* Tooltip Box */}
+                        <span className="tooltip-box bottom-full left-1/2 -translate-x-1/2 mb-1.5 w-48 rounded-lg border border-white/[0.06] bg-[#161B26] p-2 text-left text-[8px] text-gray-400 shadow-xl leading-normal font-sans normal-case tracking-normal">
+                          {categoryTooltips[q.category] || "Security domain classification."}
+                        </span>
+                      </span>
+                    </div>
+                    <h4 className="text-xs font-bold text-white leading-normal tracking-wide">{q.question}</h4>
                   </div>
-                  <span className={`inline-flex rounded px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider ${
-                    isSecure
-                      ? "bg-green-500/10 text-green-400 border border-green-500/20"
-                      : "bg-red-500/10 text-red-400 border border-red-500/20"
-                  }`}>
-                    {isSecure ? "Secure" : "Insecure Option (+ " + option?.scoreImpact + " Risk)"}
-                  </span>
+                  
+                  <div className="flex items-center gap-3 shrink-0">
+                    <span className={`inline-flex rounded px-2 py-0.5 text-[8px] font-bold uppercase tracking-wider border ${
+                      isSecure
+                        ? "bg-green-500/10 text-green-400 border-green-500/20"
+                        : "bg-red-500/10 text-red-400 border-red-500/20"
+                    }`}>
+                      {isSecure ? "Secure" : "Insecure option (+ " + option?.scoreImpact + " Risk)"}
+                    </span>
+                    <ChevronRight
+                      size={14}
+                      className={`text-gray-500 transition-transform ${isExpanded ? "rotate-90" : ""}`}
+                    />
+                  </div>
                 </div>
 
-                {option && (
-                  <div className="rounded-lg bg-gray-900/40 p-3 border border-gray-800/40 text-[11px] text-gray-400 space-y-1">
-                    <p className="font-bold text-gray-300">Selected: {option.label}</p>
+                {/* Collapsible Disclosure details */}
+                {isExpanded && option && (
+                  <div className="rounded-xl bg-[#0B0F19]/60 p-4 border border-white/[0.03] text-xs text-gray-400 space-y-2 animate-fade-in-up">
+                    <div className="flex items-center gap-1.5 text-xs text-gray-300 font-bold">
+                      <span className="h-1.5 w-1.5 rounded-full bg-blue-500" />
+                      <span>Submitted Answer:</span>
+                      <span className="text-blue-400">{option.label}</span>
+                    </div>
                     <p className="leading-relaxed leading-normal text-gray-500 font-sans">{option.description}</p>
+                    
+                    {/* Security impact metadata */}
+                    <div className="border-t border-white/[0.03] pt-2.5 mt-2 flex flex-wrap gap-x-6 gap-y-2 text-[10px] text-gray-500">
+                      <span>Confidentiality Impairment: <span className={option.ciaImpact.confidentiality > 0 ? "text-red-400 font-semibold" : "text-gray-400"}>+{option.ciaImpact.confidentiality}%</span></span>
+                      <span>Integrity Impairment: <span className={option.ciaImpact.integrity > 0 ? "text-red-400 font-semibold" : "text-gray-400"}>+{option.ciaImpact.integrity}%</span></span>
+                      <span>Availability Impairment: <span className={option.ciaImpact.availability > 0 ? "text-red-400 font-semibold" : "text-gray-400"}>+{option.ciaImpact.availability}%</span></span>
+                    </div>
                   </div>
                 )}
               </div>
