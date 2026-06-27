@@ -14,11 +14,8 @@ export default function Footer() {
             </p>
           </div>
           <div className="text-center md:text-right space-y-1">
-            <p className="text-[11px] text-gray-400">
-              Developed for the <span className="text-blue-500 font-medium">IBM SkillsBuild</span> &bull; <span className="text-purple-400 font-medium">GTU SBTP 2026</span> Program
-            </p>
             <p className="text-[10px] text-gray-600 leading-normal max-w-md font-sans">
-              This application is simulated for educational threat modeling purposes and does not execute real-world network attacks or scan active systems.
+              This application is simulated for threat modeling education purposes and does not execute real-world network attacks or scan active systems.
             </p>
           </div>
         </div>

@@ -102,7 +102,7 @@ export default function AssessmentPage() {
               <Loader2 className="animate-spin" size={28} />
               <div className="absolute inset-0 rounded-full border-2 border-blue-500/20 animate-ping" />
             </div>
-            <h2 className="text-xl font-bold text-white tracking-wide">Threat &amp; Compliance Audit</h2>
+            <h2 className="text-xl font-bold text-white tracking-wide">Threat &amp; Security Hygiene Audit</h2>
             <p className="text-xs text-gray-500">Processing security questionnaire. Generating custom scorecards...</p>
           </div>
 
@@ -272,10 +272,10 @@ export default function AssessmentPage() {
           </div>
         </div>
 
-        {/* Right Side: Command Hub Grid Index */}
+        {/* Right Side: Audit Navigation Grid */}
         <div className="lg:col-span-4 rounded-2xl border border-white/[0.04] bg-[#111827]/30 p-5 space-y-4">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Navigation Hub</span>
+            <span className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Audit Navigation Grid</span>
             <span className="text-[10px] text-gray-500">{QUESTIONS.filter(q => !!answers[q.id]).length} / {totalQuestions} Answered</span>
           </div>
 

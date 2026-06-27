@@ -65,9 +65,9 @@ export default function ReportsPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-white/[0.04] pb-5">
         <div>
-          <h1 className="text-3xl font-extrabold tracking-tight text-white">Security Audit Registry</h1>
+          <h1 className="text-3xl font-extrabold tracking-tight text-white">Audit History &amp; Trail</h1>
           <p className="mt-1 text-sm text-gray-400">
-            Review detailed question logs and download portable vector reports.
+            Review response logs and export your academic audit report.
           </p>
         </div>
         <button
@@ -75,7 +75,7 @@ export default function ReportsPage() {
           className="flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-xs font-semibold text-white shadow-lg shadow-blue-500/10 hover:bg-blue-500 hover:scale-[1.01] transition-all"
         >
           <FileDown size={13} />
-          Export Compliance Report
+          Download Audit Report
         </button>
       </div>
 
@@ -83,7 +83,7 @@ export default function ReportsPage() {
       <div className="rounded-2xl border border-white/[0.04] bg-[#111827]/40 backdrop-blur-md p-6 shadow-xl space-y-4 animate-fade-in-up">
         <div className="flex items-center gap-2 text-gray-400 border-b border-white/[0.03] pb-3">
           <FileText size={15} className="text-blue-400" />
-          <h2 className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Registry Overview</h2>
+          <h2 className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Audit Trails Overview</h2>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
@@ -112,7 +112,7 @@ export default function ReportsPage() {
       <div className="space-y-5 animate-fade-in-up delay-100">
         <h3 className="text-base font-bold text-white flex items-center gap-2 tracking-wide">
           <Activity className="text-blue-500" size={16} />
-          Interactive Answer Audit Trail
+          Response Analysis &amp; Vulnerability Mapping
         </h3>
 
         <div className="space-y-3.5">

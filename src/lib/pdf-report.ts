@@ -25,7 +25,7 @@ export function generatePdfReport(
     doc.setLineWidth(0.5);
     doc.rect(10, 10, pageWidth - 20, pageHeight - 20);
     
-    // Header blue line
+    // Header accent blue line
     doc.setDrawColor(59, 130, 246);
     doc.setLineWidth(1);
     doc.line(15, 15, pageWidth - 15, 15);
@@ -34,7 +34,8 @@ export function generatePdfReport(
     doc.setFont("helvetica", "normal");
     doc.setFontSize(8);
     doc.setTextColor(156, 163, 175);
-    doc.text("CyberGuard | IBM SkillsBuild + GTU SBTP 2026 Cyber Risk Program", 15, pageHeight - 12);
+    doc.text("CyberGuard Security Threat Visualizer & Risk Report", 15, pageHeight - 12);
+    doc.text(`Page ${doc.internal.pages.length - 1}`, pageWidth - 25, pageHeight - 12);
   };
 
   const checkPageBreak = (neededHeight: number) => {
@@ -51,18 +52,18 @@ export function generatePdfReport(
 
   // Title block
   doc.setFont("helvetica", "bold");
-  doc.setFontSize(22);
+  doc.setFontSize(18);
   doc.setTextColor(59, 130, 246); // Primary Blue
-  doc.text("CYBERGUARD SECURITY REPORT", 15, y);
-  y += 7;
+  doc.text("CYBERGUARD RISK & THREAT ASSESSMENT REPORT", 15, y);
+  y += 6;
 
   // Subtitle block
   doc.setFont("helvetica", "normal");
-  doc.setFontSize(9.5);
+  doc.setFontSize(9);
   doc.setTextColor(120, 130, 140);
-  doc.text("Automated Risk Visualization & Security Hygiene Audit", 15, y);
-  doc.text("IBM SkillsBuild + GTU SBTP 2026 Partner", pageWidth - 15, y, { align: "right" });
-  y += 10;
+  doc.text("Automated Risk Analysis, Security Hygiene Audit, & Exploit Path Simulation", 15, y);
+  doc.text("System Audit Version 2.0.0", pageWidth - 15, y, { align: "right" });
+  y += 6;
 
   // Divider
   doc.setDrawColor(31, 41, 55);
@@ -74,147 +75,203 @@ export function generatePdfReport(
   doc.rect(15, y, contentWidth, 38, "F");
 
   doc.setFont("helvetica", "bold");
-  doc.setFontSize(11);
+  doc.setFontSize(10);
   doc.setTextColor(243, 244, 246);
-  doc.text("EXECUTIVE AUDIT SUMMARY", 20, y + 8);
+  doc.text("EXECUTIVE THREAT AUDIT SUMMARY", 20, y + 7);
 
   // Score block
   doc.setFillColor(31, 41, 55); // Card background
-  doc.rect(20, y + 14, 40, 16, "F");
+  doc.rect(20, y + 13, 40, 18, "F");
   
   doc.setFont("helvetica", "bold");
-  doc.setFontSize(9);
+  doc.setFontSize(8);
   doc.setTextColor(156, 163, 175);
-  doc.text("OVERALL RISK", 24, y + 19);
+  doc.text("HYGIENE INDEX", 24, y + 18);
 
   let riskColor = [16, 185, 129]; // Success green
   if (risk.score > 80) riskColor = [239, 68, 68]; // Danger red
   else if (risk.score > 60) riskColor = [239, 68, 68]; // Danger red
   else if (risk.score > 30) riskColor = [245, 158, 11]; // Warning orange
 
-  doc.setFontSize(15);
+  doc.setFontSize(14);
   doc.setTextColor(riskColor[0], riskColor[1], riskColor[2]);
-  doc.text(`${risk.score} / 100`, 24, y + 26);
+  doc.text(`${risk.score} / 100`, 24, y + 25);
 
   // Tier block
   doc.setFillColor(31, 41, 55);
-  doc.rect(65, y + 14, 40, 16, "F");
+  doc.rect(65, y + 13, 40, 18, "F");
 
-  doc.setFontSize(9);
+  doc.setFontSize(8);
   doc.setTextColor(156, 163, 175);
-  doc.text("RISK LEVEL", 69, y + 19);
+  doc.text("THREAT EXPOSURE", 69, y + 18);
 
-  doc.setFontSize(13);
+  doc.setFontSize(11);
   doc.setTextColor(riskColor[0], riskColor[1], riskColor[2]);
-  doc.text(risk.level, 69, y + 26);
+  doc.text(risk.level, 69, y + 25);
 
   // Description copy
   doc.setFont("helvetica", "normal");
-  doc.setFontSize(9);
+  doc.setFontSize(8);
   doc.setTextColor(209, 213, 219);
-  const summaryCopy = `This assessment evaluated your security hygiene across 10 essential control points. Your current status presents a ${risk.level} risk score of ${risk.score}/100. This indicates that security configurations are ${risk.score > 60 ? 'severely neglected and leave you vulnerable to automated threats' : risk.score > 30 ? 'partially implemented, creating critical entry points for exploits' : 'well-managed with minor areas of improvement'}. Detailed breakdowns are compiled below.`;
+  const summaryCopy = `In compliance with academic risk assessment parameters, this audit evaluated 10 local security control domains. The subject's baseline configurations returned a posture rating of ${risk.level} (exposure coefficient of ${risk.score}/100). This quantitative value suggests that system borders are ${risk.score > 60 ? 'vulnerable to exploit chaining due to missing foundational authentication controls' : risk.score > 30 ? 'partially shielded, although key transport and local updates remain insecure' : 'secured under standard hygiene policies, leaving minor surface areas exposed'}.`;
   const splitSummary = doc.splitTextToSize(summaryCopy, contentWidth - 100);
-  doc.text(splitSummary, 110, y + 18);
+  doc.text(splitSummary, 110, y + 17);
 
-  y += 48;
+  y += 46;
 
   // CIA Triad Status
   doc.setFont("helvetica", "bold");
-  doc.setFontSize(12);
+  doc.setFontSize(10.5);
   doc.setTextColor(243, 244, 246);
-  doc.text("CIA TRIAD SECURITY CAPABILITIES", 15, y);
-  y += 7;
+  doc.text("CIA TRIAD SEGREGATION & THEORY ALIGNMENT", 15, y);
+  y += 6;
 
   // Confidentiality
   doc.setFillColor(31, 41, 55);
-  doc.rect(15, y, 52, 20, "F");
-  doc.setFontSize(9.5);
+  doc.rect(15, y, 52, 22, "F");
+  doc.setFontSize(8.5);
   doc.setTextColor(156, 163, 175);
-  doc.text("Confidentiality", 20, y + 7);
-  doc.setFontSize(13);
+  doc.text("Confidentiality (C)", 20, y + 6);
+  doc.setFontSize(11);
   doc.setTextColor(59, 130, 246); // Primary
-  doc.text(`${cia.confidentiality}% Secure`, 20, y + 14);
+  doc.text(`${cia.confidentiality}% Secure`, 20, y + 12);
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(6.5);
+  doc.setTextColor(180, 185, 190);
+  doc.text("MFA / Unique Credentials", 20, y + 17);
 
   // Integrity
   doc.setFillColor(31, 41, 55);
-  doc.rect(pageWidth / 2 - 26, y, 52, 20, "F");
-  doc.setFontSize(9.5);
+  doc.rect(pageWidth / 2 - 26, y, 52, 22, "F");
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(8.5);
   doc.setTextColor(156, 163, 175);
-  doc.text("Integrity", pageWidth / 2 - 21, y + 7);
-  doc.setFontSize(13);
+  doc.text("Integrity (I)", pageWidth / 2 - 21, y + 6);
+  doc.setFontSize(11);
   doc.setTextColor(139, 92, 246); // Accent
-  doc.text(`${cia.integrity}% Secure`, pageWidth / 2 - 21, y + 14);
+  doc.text(`${cia.integrity}% Secure`, pageWidth / 2 - 21, y + 12);
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(6.5);
+  doc.setTextColor(180, 185, 190);
+  doc.text("OS Updates / Endpoint AV", pageWidth / 2 - 21, y + 17);
 
   // Availability
   doc.setFillColor(31, 41, 55);
-  doc.rect(pageWidth - 67, y, 52, 20, "F");
-  doc.setFontSize(9.5);
+  doc.rect(pageWidth - 67, y, 52, 22, "F");
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(8.5);
   doc.setTextColor(156, 163, 175);
-  doc.text("Availability", pageWidth - 62, y + 7);
-  doc.setFontSize(13);
+  doc.text("Availability (A)", pageWidth - 62, y + 6);
+  doc.setFontSize(11);
   doc.setTextColor(16, 185, 129); // Success
-  doc.text(`${cia.availability}% Secure`, pageWidth - 62, y + 14);
+  doc.text(`${cia.availability}% Secure`, pageWidth - 62, y + 12);
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(6.5);
+  doc.setTextColor(180, 185, 190);
+  doc.text("Redundant Backups", pageWidth - 62, y + 17);
 
-  y += 30;
+  y += 32;
+
+  // Threat Matrix Mapping (STRIDE Framework)
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(10.5);
+  doc.setTextColor(243, 244, 246);
+  doc.text("SECURITY HYGIENE DOMAIN MATRIX", 15, y);
+  y += 6;
+
+  doc.setFillColor(17, 24, 39);
+  doc.rect(15, y, contentWidth, 24, "F");
+
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(8);
+  doc.setTextColor(156, 163, 175);
+  doc.text("DOMAIN AREA", 20, y + 6);
+  doc.text("PRIMARY MITIGATION FOCUS", 65, y + 6);
+  doc.text("STRIDE CLASSIFICATION", pageWidth - 65, y + 6);
+
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(7.5);
+  doc.setTextColor(209, 213, 219);
+  doc.text("Identity & Access Bounds", 20, y + 12);
+  doc.text("Multi-Factor Authentication & Identity Verification", 65, y + 12);
+  doc.text("Spoofing (S), Elevation of Privilege (E)", pageWidth - 65, y + 12);
+
+  doc.text("Endpoint & Local Defense", 20, y + 18);
+  doc.text("Operating System Patches & Real-Time Antivirus", 65, y + 18);
+  doc.text("Tampering (T), Information Disclosure (I)", pageWidth - 65, y + 18);
+
+  y += 34;
 
   // Attack Path Explanations
   doc.setFont("helvetica", "bold");
-  doc.setFontSize(12);
+  doc.setFontSize(10.5);
   doc.setTextColor(243, 244, 246);
-  doc.text("EXPLOIT PATH SIMULATIONS", 15, y);
-  y += 7;
+  doc.text("EXPLOIT PATH SIMULATIONS & MITRE ATT&CK ALIGNMENT", 15, y);
+  y += 6;
 
   for (const path of attackPaths) {
-    checkPageBreak(32);
+    checkPageBreak(34);
     doc.setFillColor(17, 24, 39);
-    doc.rect(15, y, contentWidth, 25, "F");
+    doc.rect(15, y, contentWidth, 28, "F");
 
     doc.setFont("helvetica", "bold");
-    doc.setFontSize(10);
+    doc.setFontSize(9);
     doc.setTextColor(243, 244, 246);
-    doc.text(path.name, 20, y + 7);
+    doc.text(path.name, 20, y + 6);
+
+    // STRIDE / MITRE label
+    let strideLabel = "";
+    if (path.id === "credential-theft") strideLabel = "STRIDE: Spoofing (S) | MITRE: T1078 (Valid Accounts)";
+    else if (path.id === "ransomware") strideLabel = "STRIDE: Tampering (T) / Denial of Service (D) | MITRE: T1486";
+    else strideLabel = "STRIDE: Information Disclosure (I) | MITRE: T1040 (Network Sniffing)";
+
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(7.5);
+    doc.setTextColor(139, 92, 246); // Accent purple
+    doc.text(strideLabel, 20, y + 11);
 
     // Tag block
     if (path.isCompromised) {
       doc.setFillColor(239, 68, 68);
       doc.rect(pageWidth - 48, y + 3, 33, 6, "F");
       doc.setFont("helvetica", "bold");
-      doc.setFontSize(8);
+      doc.setFontSize(7.5);
       doc.setTextColor(255, 255, 255);
-      doc.text("COMPROMISED", pageWidth - 45, y + 7.2);
+      doc.text("PATH EXPLOITED", pageWidth - 45, y + 7.2);
     } else {
       doc.setFillColor(16, 185, 129);
       doc.rect(pageWidth - 48, y + 3, 33, 6, "F");
       doc.setFont("helvetica", "bold");
-      doc.setFontSize(8);
+      doc.setFontSize(7.5);
       doc.setTextColor(255, 255, 255);
-      doc.text("SECURE / BLOCKED", pageWidth - 45, y + 7.2);
+      doc.text("BARRIER BLOCKED", pageWidth - 45, y + 7.2);
     }
 
     doc.setFont("helvetica", "normal");
-    doc.setFontSize(8.5);
+    doc.setFontSize(7.5);
     doc.setTextColor(156, 163, 175);
     const descText = doc.splitTextToSize(path.description, contentWidth - 10);
-    doc.text(descText, 20, y + 13);
+    doc.text(descText, 20, y + 16);
     doc.setFont("helvetica", "bold");
-    doc.text(`Identified Vulnerability Chain: ${path.triggerVulnerability}`, 20, y + 20);
+    doc.text(`Vulnerability Chain Origin: ${path.triggerVulnerability}`, 20, y + 23);
 
-    y += 31;
+    y += 34;
   }
 
   // Recommendations page header
   checkPageBreak(40);
   doc.setFont("helvetica", "bold");
-  doc.setFontSize(12);
+  doc.setFontSize(10.5);
   doc.setTextColor(243, 244, 246);
-  doc.text("RECOMMENDED MITIGATION ACTIONS (PRIORITIZED)", 15, y);
-  y += 8;
+  doc.text("PRIORITIZED ACADEMIC MITIGATION BLUEPRINTS", 15, y);
+  y += 7;
 
   if (recommendations.length === 0) {
     doc.setFont("helvetica", "normal");
-    doc.setFontSize(10);
+    doc.setFontSize(9);
     doc.setTextColor(16, 185, 129);
-    doc.text("Excellent! Your current configurations demonstrate solid cybersecurity posture.", 15, y);
+    doc.text("Audit verified: Subject's security posture is aligned with all assessed university best practices.", 15, y);
+    y += 15;
   } else {
     let index = 1;
     for (const rec of recommendations) {
@@ -234,21 +291,21 @@ export function generatePdfReport(
       doc.rect(15, y, 2, 32, "F");
 
       doc.setFont("helvetica", "bold");
-      doc.setFontSize(9.5);
+      doc.setFontSize(9);
       doc.setTextColor(243, 244, 246);
       doc.text(`${index}. ${rec.title}`, 20, y + 6);
 
       // Metadata tags
       doc.setFont("helvetica", "normal");
-      doc.setFontSize(7.5);
+      doc.setFontSize(7);
       doc.setTextColor(156, 163, 175);
-      doc.text(`Risk Impact: -${rec.riskReduction} Risk Points`, 20, y + 11);
-      doc.text(`Estimated Cost: ${rec.cost}`, 75, y + 11);
-      doc.text(`Setup Effort: ${rec.effort}`, 115, y + 11);
+      doc.text(`Risk Mitigation: -${rec.riskReduction} Pts`, 20, y + 11);
+      doc.text(`Resource Cost: ${rec.cost}`, 75, y + 11);
+      doc.text(`Effort Complexity: ${rec.effort}`, 115, y + 11);
       doc.text(rec.ciaBenefit, pageWidth - 20, y + 11, { align: "right" });
 
       // Core steps
-      doc.setFontSize(8.5);
+      doc.setFontSize(8);
       doc.setTextColor(209, 213, 219);
       let stepY = y + 17;
       for (let i = 0; i < Math.min(2, rec.steps.length); i++) {
@@ -262,5 +319,5 @@ export function generatePdfReport(
   }
 
   // Save the compiled PDF
-  doc.save("CyberGuard_Risk_Report.pdf");
+  doc.save("CyberGuard_Security_Audit_Report.pdf");
 }

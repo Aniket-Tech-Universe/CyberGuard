@@ -25,8 +25,8 @@ export default function AboutDeveloperPage() {
 
         <div className="space-y-4 text-center md:text-left w-full">
           <div>
-            <h2 className="text-lg font-bold text-white tracking-wide">Student Developer</h2>
-            <p className="text-xs text-blue-400 font-semibold tracking-wider uppercase mt-0.5">GTU SBTP 2026 Cyber Security Intern</p>
+            <h2 className="text-lg font-bold text-white tracking-wide">Developer &amp; Security Analyst</h2>
+            <p className="text-xs text-blue-400 font-semibold tracking-wider uppercase mt-0.5">Full-Stack Engineer &amp; Threat Modeler</p>
           </div>
 
           <p className="text-xs text-gray-400 leading-relaxed font-sans max-w-xl">
@@ -90,11 +90,11 @@ export default function AboutDeveloperPage() {
         </div>
       </div>
 
-      {/* Sessional Endorsements */}
+      {/* Threat Modeling Note */}
       <div className="rounded-2xl border border-white/[0.04] bg-white/[0.01] p-5 flex items-start gap-4 animate-fade-in-up delay-300">
         <Shield className="text-blue-500 shrink-0 mt-0.5 animate-pulse" size={16} />
         <p className="text-[11px] text-gray-500 leading-relaxed font-sans">
-          This educational simulator is submitted in fulfillment of sessional assessment guidelines under university heads for the GTU SBTP 2026 cybersecurity internship requirement. Logic weights, category mappings, and path flow connections have been checked for academic compliance.
+          This educational threat simulator is designed to demonstrate risk propagation. All scoring calculations, category weights, and connection vectors are modeled on industry frameworks to build threat defense intuition.
         </p>
       </div>
     </div>

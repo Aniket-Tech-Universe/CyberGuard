@@ -38,14 +38,14 @@ export default function AboutProjectPage() {
         </div>
       </section>
 
-      {/* Program Alignment Banner */}
+      {/* Security Principles Banner */}
       <section className="rounded-2xl border border-blue-500/20 bg-blue-500/5 p-6 md:p-8 space-y-3.5 animate-fade-in-up delay-200">
         <div className="flex items-center gap-2 text-blue-400">
           <Award size={18} />
-          <h3 className="text-xs font-bold uppercase tracking-widest">Academic Program Parameters</h3>
+          <h3 className="text-xs font-bold uppercase tracking-widest">Core Security Design Principles</h3>
         </div>
         <p className="text-xs text-gray-300 leading-relaxed font-sans">
-          Developed in strict compliance with the **Gujarat Technological University (GTU) Security Best Practices (SBTP) 2026** curriculum parameters. CyberGuard reinforces core concepts including the Principle of Least Privilege, endpoint sandbox constraints, and 3-2-1 backup strategies.
+          CyberGuard is modeled on standard defensive principles, highlighting the Principle of Least Privilege, transport encryption tunnels, and offline backup strategies. By visualising these domains, users see exactly how vulnerability vectors propagate.
         </p>
       </section>
 
@@ -64,7 +64,7 @@ export default function AboutProjectPage() {
             </p>
           </div>
           <div className="rounded-2xl border border-white/[0.04] bg-white/[0.005] p-5 space-y-2">
-            <h4 className="text-xs font-bold text-white tracking-wide">SaaS Design Tokens</h4>
+            <h4 className="text-xs font-bold text-white tracking-wide">Design System &amp; UI Tokens</h4>
             <p className="text-[11px] text-gray-500 leading-relaxed font-sans">
               Implements custom dark theme palettes and CSS variables configured directly within Tailwind for responsive visual alignments.
             </p>
@@ -105,7 +105,7 @@ export default function AboutProjectPage() {
       <section className="space-y-4 animate-fade-in-up delay-500">
         <h2 className="text-base font-bold text-white flex items-center gap-2 tracking-wide">
           <Forward className="text-blue-400" size={16} />
-          Product Roadmap
+          Future Scope &amp; Enhancements
         </h2>
         <p className="text-[11px] text-gray-400 leading-relaxed font-sans max-w-2xl">
           Future enhancements include AI-driven compliance blueprint generation, active feed integration for CVE vulnerability alerts, custom infrastructure layout setups, and local file scanner plugins.

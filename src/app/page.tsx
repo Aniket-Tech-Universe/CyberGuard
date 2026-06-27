@@ -51,11 +51,6 @@ export default function HomePage() {
 
       {/* 1. Hero Section */}
       <section className="relative mx-auto max-w-5xl pt-12 md:pt-20 text-center space-y-8 animate-fade-in-up">
-        {/* Academic Badge */}
-        <div className="inline-flex items-center gap-2 rounded-full border border-white/[0.04] bg-white/[0.02] px-4 py-1.5 text-xs font-semibold text-gray-400 backdrop-blur-md">
-          <span className="flex h-1.5 w-1.5 rounded-full bg-blue-500" />
-          IBM SkillsBuild &bull; GTU SBTP 2026 Academic Project
-        </div>
 
         <h1 className="text-5xl font-extrabold tracking-tight text-white sm:text-6xl md:text-7xl leading-tight">
           Quantify Cyber Risk. <br />
@@ -65,7 +60,7 @@ export default function HomePage() {
         </h1>
 
         <p className="mx-auto max-w-2xl text-base sm:text-lg text-gray-400 leading-relaxed">
-          CyberGuard translates personal habits into quantifiable security scores. Simulate exploit chains, test real-time What-If mitigations, and compile compliance audit reports on a sleek SaaS dashboard.
+          CyberGuard translates personal habits into quantifiable security scores. Simulate exploit chains, test real-time What-If mitigations, and compile security audit reports on a sleek interactive dashboard.
         </p>
 
         <div className="flex flex-col sm:flex-row justify-center items-center gap-4 pt-4">
@@ -76,21 +71,30 @@ export default function HomePage() {
             {isSubmitted ? (
               <>
                 <LayoutDashboard size={16} />
-                Open Command Center
+                Open Threat Visualizer
               </>
             ) : (
               <>
                 <Play size={14} fill="currentColor" />
-                Initialize Assessment
+                Start Security Audit
               </>
             )}
             <ArrowRight size={15} className="transition-transform group-hover:translate-x-0.5" />
           </Link>
+          {isSubmitted && (
+            <Link
+              href="/terminal"
+              className="flex items-center gap-2 rounded-xl border border-blue-500/30 bg-blue-500/5 hover:bg-blue-500/10 px-6 py-3.5 text-sm font-semibold text-blue-400 hover:text-white transition-all duration-200"
+            >
+              <Terminal size={14} />
+              Open Sandbox Terminal
+            </Link>
+          )}
           <Link
             href="/about-project"
             className="flex items-center gap-2 rounded-xl border border-white/[0.06] bg-white/[0.02] hover:bg-white/[0.04] px-6 py-3.5 text-sm font-semibold text-gray-300 transition-all duration-200 hover:text-white"
           >
-            Review Project Spec
+            View Project Details
           </Link>
         </div>
       </section>
@@ -104,7 +108,7 @@ export default function HomePage() {
               <span className="h-2.5 w-2.5 rounded-full bg-red-500/80" />
               <span className="h-2.5 w-2.5 rounded-full bg-yellow-500/80" />
               <span className="h-2.5 w-2.5 rounded-full bg-green-500/80" />
-              <span className="ml-2 text-xs font-semibold tracking-wider text-gray-500 uppercase">Interactive Simulation Console</span>
+              <span className="ml-2 text-xs font-semibold tracking-wider text-gray-500 uppercase">Interactive Threat Simulator</span>
             </div>
             <div className="flex items-center gap-1.5 text-[10px] text-gray-400 border border-white/[0.05] bg-white/[0.02] px-2.5 py-1 rounded-md">
               <Activity size={10} className="text-blue-500 animate-pulse" />
@@ -221,7 +225,7 @@ export default function HomePage() {
             {/* Right Col: Interactive Control Sidebar */}
             <div className="md:col-span-4 flex flex-col justify-between border-t md:border-t-0 md:border-l border-white/[0.04] pt-6 md:pt-0 md:pl-6 space-y-6">
               <div className="space-y-4">
-                <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest block">Sandbox Control Console</span>
+                <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest block">Simulator Parameter Overrides</span>
                 <p className="text-xs text-gray-400 leading-relaxed">
                   Toggle controls below to watch how risk recalculates and blocks compromise paths in real-time.
                 </p>
@@ -255,7 +259,7 @@ export default function HomePage() {
               {/* Feed ticker */}
               <div className="rounded-lg bg-white/[0.01] border border-white/[0.04] p-3 text-[10px] text-gray-500 font-mono space-y-1">
                 <div className="flex items-center justify-between text-gray-400 border-b border-white/[0.03] pb-1.5 mb-1.5">
-                  <span>TELEMETRY TICKER</span>
+                  <span>AUDIT LOG TICKER</span>
                   <span>TIME UTC</span>
                 </div>
                 <div className={activeCheckStep === 0 ? "text-blue-400 transition-colors" : ""}>
@@ -317,17 +321,17 @@ export default function HomePage() {
       <section className="mx-auto max-w-5xl rounded-2xl border border-white/[0.04] bg-white/[0.01] p-8 md:p-12 relative overflow-hidden">
         <div className="absolute top-0 right-0 h-48 w-48 rounded-full bg-blue-500/5 blur-3xl pointer-events-none" />
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-          <StatCounter value="0%" label="Server Overhead" desc="100% Client-side state" />
-          <StatCounter value="10" label="Vulnerability Domains" desc="Comprehensive audit trail" />
-          <StatCounter value="3" label="Exploit Vectors" desc="Real-time timeline sims" />
-          <StatCounter value="0.0s" label="Calculation Latency" desc="Instant sandbox sync" />
+          <StatCounter value="0%" label="Server Overhead" desc="100% Client-Side Engine" />
+          <StatCounter value="10" label="Audit Domains Assessed" desc="Key Risk Areas Audited" />
+          <StatCounter value="3" label="Attack Vector Simulations" desc="Real-time exploit flow maps" />
+          <StatCounter value="0.0s" label="Processing Time" desc="Instant dashboard calculation" />
         </div>
       </section>
 
       {/* 5. Feature Showcase Grid */}
       <section className="mx-auto max-w-5xl space-y-12">
         <div className="text-center space-y-3">
-          <h2 className="text-3xl font-extrabold text-white">Security Command Core</h2>
+          <h2 className="text-3xl font-extrabold text-white">Security Analysis Hub</h2>
           <p className="text-sm text-gray-400 max-w-md mx-auto">
             Packed with educational capabilities to build threat mitigation intuition.
           </p>
@@ -360,22 +364,22 @@ export default function HomePage() {
           />
           <ShowcaseCard
             icon={Terminal}
-            title="Clean Software Supply Chain"
-            description="Audit browser sandbox configurations and unverified file installations."
-            domain="Application Defense"
+            title="Interactive CLI Shell"
+            description="Test live exploit simulations (exploit system/identity) and apply mitigations directly via command lines."
+            domain="Sandbox Terminal"
           />
           <ShowcaseCard
             icon={FileCheck}
-            title="Compliance Audit trail"
+            title="Comprehensive Audit Trail"
             description="Export detailed security blueprints compiled dynamically into vector PDF reports."
-            domain="Compliance Report"
+            domain="Audit Report"
           />
         </div>
       </section>
 
       {/* 6. Call to Action Panel */}
       <section className="mx-auto max-w-4xl text-center space-y-6 rounded-2xl border border-white/[0.05] bg-gradient-to-b from-white/[0.02] to-transparent p-12">
-        <h2 className="text-3xl font-bold text-white">Assess Your Risk Posture Now</h2>
+        <h2 className="text-3xl font-bold text-white">Assess Your Cyber Security Posture</h2>
         <p className="mx-auto max-w-lg text-xs text-gray-400 leading-relaxed">
           Ready to run the cyber risk visualization simulator? Run our 10-domain questionnaire to establish your baseline security profile.
         </p>
@@ -384,7 +388,7 @@ export default function HomePage() {
             href={isSubmitted ? "/dashboard" : "/assessment"}
             className="group inline-flex items-center gap-2 rounded-xl bg-blue-600 hover:bg-blue-500 px-6 py-3 text-xs font-semibold text-white shadow-lg transition-all"
           >
-            {isSubmitted ? "Open Security Dashboard" : "Begin Interactive Audit"}
+            {isSubmitted ? "View Threat Visualizer" : "Start Security Audit"}
             <ArrowRight size={14} className="transition-transform group-hover:translate-x-0.5" />
           </Link>
         </div>
