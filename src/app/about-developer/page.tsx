@@ -1,6 +1,7 @@
 "use client";
 
-import { Shield, Award, UserCheck, Heart } from "lucide-react";
+import { Shield, Award, Heart } from "lucide-react";
+import Image from "next/image";
 
 export default function AboutDeveloperPage() {
   return (
@@ -19,8 +20,14 @@ export default function AboutDeveloperPage() {
       <div className="rounded-2xl border border-white/[0.04] bg-[#111827]/40 backdrop-blur-md p-6 sm:p-8 flex flex-col md:flex-row items-center md:items-start gap-8 shadow-xl animate-fade-in-up delay-100">
         
         {/* Profile Avatar Block */}
-        <div className="flex h-24 w-24 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-tr from-blue-600 to-purple-600 text-white shadow-xl shadow-purple-500/10">
-          <UserCheck size={40} />
+        <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-2xl border border-white/[0.08] shadow-xl shadow-purple-500/10">
+          <Image
+            src="/developer.jpg"
+            alt="Aniket Solanki"
+            fill
+            className="object-cover"
+            priority
+          />
         </div>
 
         <div className="space-y-4 text-center md:text-left w-full">
