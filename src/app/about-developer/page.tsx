@@ -25,7 +25,7 @@ export default function AboutDeveloperPage() {
 
         <div className="space-y-4 text-center md:text-left w-full">
           <div>
-            <h2 className="text-lg font-bold text-white tracking-wide">Developer &amp; Security Analyst</h2>
+            <h2 className="text-lg font-bold text-white tracking-wide">Aniket Solanki</h2>
             <p className="text-xs text-blue-400 font-semibold tracking-wider uppercase mt-0.5">Full-Stack Engineer &amp; Threat Modeler</p>
           </div>
 
@@ -36,7 +36,7 @@ export default function AboutDeveloperPage() {
           {/* Social connections */}
           <div className="flex justify-center md:justify-start gap-3">
             <a
-              href="https://github.com"
+              href="https://github.com/Aniket-Tech-Universe"
               target="_blank"
               rel="noreferrer"
               className="flex items-center gap-2 rounded-xl border border-white/[0.05] bg-white/[0.01] hover:bg-white/[0.03] px-4 py-2 text-xs font-semibold text-gray-400 hover:text-white transition"
@@ -47,7 +47,7 @@ export default function AboutDeveloperPage() {
               GitHub Profile
             </a>
             <a
-              href="https://linkedin.com"
+              href="https://www.linkedin.com/in/aniket-solanki-463449360/"
               target="_blank"
               rel="noreferrer"
               className="flex items-center gap-2 rounded-xl border border-white/[0.05] bg-white/[0.01] hover:bg-white/[0.03] px-4 py-2 text-xs font-semibold text-gray-400 hover:text-white transition"
