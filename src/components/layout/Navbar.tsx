@@ -3,26 +3,18 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useAssessmentStore } from "@/stores/assessment-store";
 import { Shield, BarChart3, Info, User, HelpCircle, Menu, X, FileText, Terminal } from "lucide-react";
 
 export default function Navbar() {
   const pathname = usePathname();
-  const { isSubmitted } = useAssessmentStore();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const links = [
     { href: "/", label: "Home", icon: Shield },
-    {
-      href: isSubmitted ? "/dashboard" : "/assessment",
-      label: isSubmitted ? "Risk Visualizer" : "Security Audit",
-      icon: isSubmitted ? BarChart3 : HelpCircle,
-    },
-    ...(isSubmitted ? [
-      { href: "/reports", label: "Audit Trail", icon: FileText },
-      { href: "/terminal", label: "Sandbox Terminal", icon: Terminal },
-      { href: "/assessment", label: "Retake Audit", icon: HelpCircle }
-    ] : []),
+    { href: "/assessment", label: "Security Audit", icon: HelpCircle },
+    { href: "/dashboard", label: "Risk Visualizer", icon: BarChart3 },
+    { href: "/reports", label: "Audit Trail", icon: FileText },
+    { href: "/terminal", label: "Sandbox Terminal", icon: Terminal },
     { href: "/about-project", label: "Project Details", icon: Info },
     { href: "/about-developer", label: "Developer Bio", icon: User },
   ];

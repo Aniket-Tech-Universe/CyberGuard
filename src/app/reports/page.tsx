@@ -1,7 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { useAssessmentStore } from "@/stores/assessment-store";
 import { QUESTIONS } from "@/data/questions";
 import { evaluateRisk } from "@/lib/risk-engine";
@@ -15,29 +14,14 @@ import {
   CheckCircle,
   HelpCircle,
   ChevronRight,
-  Loader2,
   Activity
 } from "lucide-react";
 
 export default function ReportsPage() {
-  const router = useRouter();
-  const { answers, isSubmitted, whatIfToggles } = useAssessmentStore();
+  const { answers, whatIfToggles } = useAssessmentStore();
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
 
-  useEffect(() => {
-    if (!isSubmitted) {
-      router.push("/assessment");
-    }
-  }, [isSubmitted, router]);
 
-  if (!isSubmitted) {
-    return (
-      <div className="flex min-h-[60vh] flex-col items-center justify-center space-y-4 text-center">
-        <Loader2 className="animate-spin text-blue-500" size={32} />
-        <span className="text-xs text-gray-500 uppercase tracking-widest font-semibold">Loading Report Archive</span>
-      </div>
-    );
-  }
 
   // Calculate parameters for PDF
   const risk = evaluateRisk(answers, whatIfToggles);

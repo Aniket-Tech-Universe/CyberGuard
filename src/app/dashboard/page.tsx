@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useAssessmentStore } from "@/stores/assessment-store";
 import { evaluateRisk } from "@/lib/risk-engine";
 import { evaluateCia } from "@/lib/cia-engine";
@@ -378,8 +377,7 @@ function AnimatedCounter({ value }: { value: number }) {
 }
 
 export default function DashboardPage() {
-  const router = useRouter();
-  const { answers, isSubmitted, whatIfToggles, setWhatIfToggle, resetWhatIfToggles } =
+  const { answers, whatIfToggles, setWhatIfToggle, resetWhatIfToggles } =
     useAssessmentStore();
 
   const [activePathTab, setActivePathTab] = useState("credential-theft");
@@ -388,20 +386,7 @@ export default function DashboardPage() {
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
   const [selectedGeoSource, setSelectedGeoSource] = useState<string | null>(null);
 
-  // Redirect if not submitted
-  useEffect(() => {
-    if (!isSubmitted) {
-      router.push("/assessment");
-    }
-  }, [isSubmitted, router]);
 
-  if (!isSubmitted) {
-    return (
-      <div className="flex min-h-[60vh] flex-col items-center justify-center space-y-4 text-center">
-        <LoaderSpinner />
-      </div>
-    );
-  }
 
   // Calculate parameters
   const risk = evaluateRisk(answers, whatIfToggles);
@@ -1271,13 +1256,6 @@ function SandboxSliderToggle({
   );
 }
 
-function LoaderSpinner() {
-  return (
-    <div className="flex flex-col items-center justify-center space-y-3">
-      <RefreshCw className="animate-spin text-blue-500" size={32} />
-      <span className="text-xs text-gray-500 uppercase tracking-widest font-semibold">Loading Threat Visualizer</span>
-    </div>
-  );
-}
+
 
 
