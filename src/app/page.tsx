@@ -17,10 +17,13 @@ import {
   Database,
   Terminal,
   Activity,
-  FileCheck
+  FileCheck,
+  RotateCcw
 } from "lucide-react";
+import { useAssessmentStore } from "@/stores/assessment-store";
 
 export default function HomePage() {
+  const { isSubmitted } = useAssessmentStore();
   
   // Interactive mock dashboard preview local state
   const [mockMfa, setMockMfa] = useState(false);
@@ -62,28 +65,41 @@ export default function HomePage() {
         </p>
 
         <div className="flex flex-col sm:flex-row justify-center items-center gap-4 pt-4">
-          <Link
-            href="/assessment"
-            className="group flex items-center gap-2 rounded-xl bg-blue-600 px-6 py-3.5 text-sm font-semibold text-white shadow-lg shadow-blue-500/20 transition-all duration-200 hover:bg-blue-500 hover:shadow-blue-500/30 hover:scale-[1.02]"
-          >
-            <Play size={14} fill="currentColor" />
-            Start Security Audit
-            <ArrowRight size={15} className="transition-transform group-hover:translate-x-0.5" />
-          </Link>
-          <Link
-            href="/dashboard"
-            className="flex items-center gap-2 rounded-xl border border-white/[0.06] bg-white/[0.02] hover:bg-white/[0.04] px-6 py-3.5 text-sm font-semibold text-gray-300 transition-all duration-200 hover:text-white"
-          >
-            <LayoutDashboard size={16} />
-            Threat Visualizer
-          </Link>
-          <Link
-            href="/terminal"
-            className="flex items-center gap-2 rounded-xl border border-blue-500/30 bg-blue-500/5 hover:bg-blue-500/10 px-6 py-3.5 text-sm font-semibold text-blue-400 hover:text-white transition-all duration-200"
-          >
-            <Terminal size={14} />
-            Sandbox Terminal
-          </Link>
+          {!isSubmitted ? (
+            <Link
+              href="/assessment"
+              className="group flex items-center gap-2 rounded-xl bg-blue-600 px-6 py-3.5 text-sm font-semibold text-white shadow-lg shadow-blue-500/20 transition-all duration-200 hover:bg-blue-500 hover:shadow-blue-500/30 hover:scale-[1.02]"
+            >
+              <Play size={14} fill="currentColor" />
+              Start Security Audit
+              <ArrowRight size={15} className="transition-transform group-hover:translate-x-0.5" />
+            </Link>
+          ) : (
+            <>
+              <Link
+                href="/assessment"
+                className="group flex items-center gap-2 rounded-xl bg-blue-600 px-6 py-3.5 text-sm font-semibold text-white shadow-lg shadow-blue-500/20 transition-all duration-200 hover:bg-blue-500 hover:shadow-blue-500/30 hover:scale-[1.02]"
+              >
+                <RotateCcw size={14} />
+                Retake Audit
+                <ArrowRight size={15} className="transition-transform group-hover:translate-x-0.5" />
+              </Link>
+              <Link
+                href="/dashboard"
+                className="flex items-center gap-2 rounded-xl border border-white/[0.06] bg-white/[0.02] hover:bg-white/[0.04] px-6 py-3.5 text-sm font-semibold text-gray-300 transition-all duration-200 hover:text-white"
+              >
+                <LayoutDashboard size={16} />
+                Threat Visualizer
+              </Link>
+              <Link
+                href="/terminal"
+                className="flex items-center gap-2 rounded-xl border border-blue-500/30 bg-blue-500/5 hover:bg-blue-500/10 px-6 py-3.5 text-sm font-semibold text-blue-400 hover:text-white transition-all duration-200"
+              >
+                <Terminal size={14} />
+                Sandbox Terminal
+              </Link>
+            </>
+          )}
         </div>
       </section>
 
@@ -372,19 +388,31 @@ export default function HomePage() {
           Ready to run the cyber risk visualization simulator? Run our 10-domain questionnaire to establish your baseline security profile.
         </p>
         <div className="pt-2 flex justify-center gap-4">
-          <Link
-            href="/assessment"
-            className="group inline-flex items-center gap-2 rounded-xl bg-blue-600 hover:bg-blue-500 px-6 py-3.5 text-xs font-semibold text-white shadow-lg transition-all"
-          >
-            Start Security Audit
-            <ArrowRight size={14} className="transition-transform group-hover:translate-x-0.5" />
-          </Link>
-          <Link
-            href="/dashboard"
-            className="group inline-flex items-center gap-2 rounded-xl border border-white/[0.06] bg-white/[0.02] hover:bg-white/[0.04] px-6 py-3.5 text-xs font-semibold text-gray-300 transition-all hover:text-white"
-          >
-            View Threat Visualizer
-          </Link>
+          {!isSubmitted ? (
+            <Link
+              href="/assessment"
+              className="group inline-flex items-center gap-2 rounded-xl bg-blue-600 hover:bg-blue-500 px-6 py-3.5 text-xs font-semibold text-white shadow-lg transition-all"
+            >
+              Start Security Audit
+              <ArrowRight size={14} className="transition-transform group-hover:translate-x-0.5" />
+            </Link>
+          ) : (
+            <>
+              <Link
+                href="/assessment"
+                className="group inline-flex items-center gap-2 rounded-xl bg-blue-600 hover:bg-blue-500 px-6 py-3.5 text-xs font-semibold text-white shadow-lg transition-all"
+              >
+                Retake Audit
+                <ArrowRight size={14} className="transition-transform group-hover:translate-x-0.5" />
+              </Link>
+              <Link
+                href="/dashboard"
+                className="group inline-flex items-center gap-2 rounded-xl border border-white/[0.06] bg-white/[0.02] hover:bg-white/[0.04] px-6 py-3.5 text-xs font-semibold text-gray-300 transition-all hover:text-white"
+              >
+                View Threat Visualizer
+              </Link>
+            </>
+          )}
         </div>
       </section>
     </div>

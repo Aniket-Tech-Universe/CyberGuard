@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { useAssessmentStore } from "@/stores/assessment-store";
 import { Terminal as TerminalIcon, ArrowLeft } from "lucide-react";
 import Link from "next/link";
@@ -11,7 +12,8 @@ interface ConsoleLine {
 }
 
 export default function TerminalPage() {
-  const { whatIfToggles, setWhatIfToggle } = useAssessmentStore();
+  const router = useRouter();
+  const { isSubmitted, whatIfToggles, setWhatIfToggle } = useAssessmentStore();
 
   const [inputVal, setInputVal] = useState("");
   const [commandHistory, setCommandHistory] = useState<string[]>([]);
@@ -36,6 +38,22 @@ export default function TerminalPage() {
   useEffect(() => {
     inputRef.current?.focus();
   }, []);
+
+  // Redirect to assessment if not submitted
+  useEffect(() => {
+    if (!isSubmitted) {
+      router.push("/assessment");
+    }
+  }, [isSubmitted, router]);
+
+  if (!isSubmitted) {
+    return (
+      <div className="flex min-h-[60vh] flex-col items-center justify-center space-y-4 text-center">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-500 border-t-transparent" />
+        <p className="text-sm text-gray-400 font-mono">Redirecting to active audit portal...</p>
+      </div>
+    );
+  }
 
 
 
