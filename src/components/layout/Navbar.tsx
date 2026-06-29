@@ -18,13 +18,9 @@ export default function Navbar() {
       label: isSubmitted ? "Retake Audit" : "Security Audit",
       icon: HelpCircle,
     },
-    ...(isSubmitted
-      ? [
-          { href: "/dashboard", label: "Risk Visualizer", icon: BarChart3 },
-          { href: "/reports", label: "Audit Trail", icon: FileText },
-          { href: "/terminal", label: "Sandbox Terminal", icon: Terminal },
-        ]
-      : []),
+    { href: "/dashboard", label: "Risk Visualizer", icon: BarChart3 },
+    { href: "/reports", label: "Audit Trail", icon: FileText },
+    { href: "/terminal", label: "Sandbox Terminal", icon: Terminal },
     { href: "/about-project", label: "Project Details", icon: Info },
     { href: "/about-developer", label: "Developer Bio", icon: User },
   ];
