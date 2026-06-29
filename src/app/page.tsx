@@ -66,14 +66,23 @@ export default function HomePage() {
 
         <div className="flex flex-col sm:flex-row justify-center items-center gap-4 pt-4">
           {!isSubmitted ? (
-            <Link
-              href="/assessment"
-              className="group flex items-center gap-2 rounded-xl bg-blue-600 px-6 py-3.5 text-sm font-semibold text-white shadow-lg shadow-blue-500/20 transition-all duration-200 hover:bg-blue-500 hover:shadow-blue-500/30 hover:scale-[1.02]"
-            >
-              <Play size={14} fill="currentColor" />
-              Start Security Audit
-              <ArrowRight size={15} className="transition-transform group-hover:translate-x-0.5" />
-            </Link>
+            <>
+              <Link
+                href="/assessment"
+                className="group flex items-center gap-2 rounded-xl bg-blue-600 px-6 py-3.5 text-sm font-semibold text-white shadow-lg shadow-blue-500/20 transition-all duration-200 hover:bg-blue-500 hover:shadow-blue-500/30 hover:scale-[1.02]"
+              >
+                <Play size={14} fill="currentColor" />
+                Start Security Audit
+                <ArrowRight size={15} className="transition-transform group-hover:translate-x-0.5" />
+              </Link>
+              <Link
+                href="/terminal"
+                className="flex items-center gap-2 rounded-xl border border-blue-500/30 bg-blue-500/5 hover:bg-blue-500/10 px-6 py-3.5 text-sm font-semibold text-blue-400 hover:text-white transition-all duration-200"
+              >
+                <Terminal size={14} />
+                Sandbox Terminal
+              </Link>
+            </>
           ) : (
             <>
               <Link
